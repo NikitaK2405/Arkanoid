@@ -298,6 +298,9 @@ def intro():
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == MOUSEBUTTONDOWN:
+                    start = True
+                    break
                 if event.type == KEYDOWN:
                     if event.key == K_LALT or event.key == K_RALT:
                         if event.mod == KMOD_ALT:
@@ -324,6 +327,9 @@ def intro():
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == MOUSEBUTTONDOWN:
+                    start = True
+                    break
                 if event.type == KEYDOWN:
                     if event.key == K_LALT or event.key == K_RALT:
                         if event.mod == KMOD_ALT:
@@ -367,6 +373,9 @@ while True:
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == MOUSEBUTTONDOWN:
+                    start = True
+                    break
                 if event.type == KEYDOWN:
                     if event.key == K_LALT or event.key == K_RALT:
                         if event.mod == KMOD_ALT:
@@ -406,6 +415,9 @@ while True:
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == MOUSEBUTTONDOWN:
+                    start = True
+                    break
                 if event.type == KEYDOWN:
                     if event.key == K_LALT or event.key == K_RALT:
                         if event.mod == KMOD_ALT:
