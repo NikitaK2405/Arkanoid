@@ -354,6 +354,7 @@ intro()
 
 result = None
 speedup = False
+shift = False
 currentspeed = ball.speed
 volume = pygame.mixer.music.get_volume()
 while True:
@@ -486,6 +487,13 @@ while True:
                         ball.speed *= 2
                     else:
                         ball.speed = currentspeed
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 4:
+                    if player.rect.y >= 450:
+                        player.rect.y -= 5
+                elif event.button == 5:
+                    if player.rect.y <= 580:
+                        player.rect.y += 5
 
         pausecheck()
 
