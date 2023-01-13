@@ -9,7 +9,7 @@ from pygame.locals import *
 class Block(pygame.sprite.Sprite):
     def __init__(self, color, x, y):
         super().__init__()
-        self.image = pygame.image.load(f"images\\{color}block.png")
+        self.image = pygame.image.load(os.path.join("images", color, "block.png"))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -26,7 +26,7 @@ class Ball(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("images\\ball.png")
+        self.image = pygame.image.load(os.path.join("images", "ball.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.width = 100
         self.height = 15
-        self.image = pygame.image.load("images\\player.png")
+        self.image = pygame.image.load(os.path.join("images", "player.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
@@ -97,8 +97,8 @@ pygame.event.set_grab(True)
 font = pygame.font.SysFont('Courier', 45, bold=True)
 mediumfont = pygame.font.SysFont('Courier', 36, bold=True)
 smallfont = pygame.font.SysFont('Courier', 35, bold=True)
-whoosh = pygame.mixer.Sound("audio\\introwhoosh.wav")
-bounce = pygame.mixer.Sound("audio\\bounce.wav")
+whoosh = pygame.mixer.Sound(os.path.join("audio", "introwhoosh.wav"))
+bounce = pygame.mixer.Sound(os.path.join("audio", "bounce.wav"))
 themes = [1, 2, 3, 4, 5]
 background = pygame.Surface(screen.get_size())
 player = Player()
@@ -126,20 +126,20 @@ def load_theme(mode, theme=1):
     if mode:
         theme = random.randint(1, 5)
     if theme == 1:
-        pygame.mixer.music.load("audio\\Viscid_ErrorRate.mp3")
-        loaded = "audio\\Viscid_ErrorRate.mp3"
+        pygame.mixer.music.load(os.path.join("audio", "Viscid_ErrorRate.mp3"))
+        loaded = os.path.join("audio", "Viscid_ErrorRate.mp3")
     elif theme == 2:
-        pygame.mixer.music.load("audio\\Viscid_Humdrum.mp3")
-        loaded = "audio\\Viscid_Humdrum.mp3"
+        pygame.mixer.music.load(os.path.join("audio", "Viscid_Humdrum.mp3"))
+        loaded = os.path.join("audio", "Viscid_Humdrum.mp3")
     elif theme == 3:
-        pygame.mixer.music.load("audio\\Viscid_Ictus.mp3")
-        loaded = "audio\\Viscid_Ictus.mp3"
+        pygame.mixer.music.load(os.path.join("audio", "Viscid_Ictus.mp3"))
+        loaded = os.path.join("audio", "Viscid_Ictus.mp3")
     elif theme == 4:
-        pygame.mixer.music.load("audio\\Viscid_Plunge.mp3")
-        loaded = "audio\\Viscid_Plunge.mp3"
+        pygame.mixer.music.load(os.path.join("audio", "Viscid_Plunge.mp3"))
+        loaded = os.path.join("audio", "Viscid_Plunge.mp3")
     elif theme == 5:
-        pygame.mixer.music.load("audio\\Viscid_Zigzag.mp3")
-        loaded = "audio\\Viscid_Zigzag.mp3"
+        pygame.mixer.music.load(os.path.join("audio", "Viscid_Zigzag.mp3"))
+        loaded = os.path.join("audio", "Viscid_Zigzag.mp3")
     return loaded
 
 
