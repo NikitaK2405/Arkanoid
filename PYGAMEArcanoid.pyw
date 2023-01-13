@@ -9,7 +9,7 @@ from pygame.locals import *
 class Block(pygame.sprite.Sprite):
     def __init__(self, color, x, y):
         super().__init__()
-        self.image = pygame.image.load(os.path.join("images", color, "block.png"))
+        self.image = pygame.image.load(os.path.join("images", f"{color}block.png"))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
