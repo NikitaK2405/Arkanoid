@@ -85,6 +85,9 @@ white = (255, 255, 255)
 colors = ["red", "orange", "yellow", "green", "lightblue", "blue", "purple"]
 block_width = 23
 block_height = 15
+ncolumn = 32
+nrow = 4
+startballpos = 180
 fps = 90
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -446,8 +449,6 @@ while True:
             pygame.display.flip()
 
     top = 50
-    ncolumn = 32
-    nrow = 4
     for row in range(nrow):
         for column in range(0, ncolumn):
             block = Block(random.choice(colors), column * (block_width + 2) + 1, top)
@@ -455,7 +456,7 @@ while True:
             allsprites.add(block)
         top += block_height + 2
     ball.x = random.randint(0, 780)
-    ball.y = 180.0
+    ball.y = startballpos
     ball.direction = random.choice(ball.directions)
     ball.speed = 1.2
 
@@ -519,6 +520,9 @@ while True:
                 whoosh.play()
                 pygame.mixer.music.stop()
                 game_over = True
+                if nrow < 10:
+                    nrow += 1
+                    startballpos += block_height
         allsprites.draw(screen)
         pygame.display.flip()
         start = False
