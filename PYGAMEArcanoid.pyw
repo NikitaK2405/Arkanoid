@@ -373,6 +373,9 @@ while True:
             text3 = font.render("Game over", True, red)
             text3pos = text3.get_rect(centerx=background.get_width() / 2)
             text3pos.top = 300
+            text4 = smallfont.render(f"You reached level {nrow - 3}!", True, white)
+            text4pos = text4.get_rect(centerx=background.get_width() / 2)
+            text4pos.top = 350
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
@@ -404,6 +407,7 @@ while True:
                 screen.blit(text2, text2pos)
             elif result == "Defeat":
                 screen.blit(text3, text3pos)
+                screen.blit(text4, text4pos)
             pygame.display.flip()
         for i in range(255, 0, -2):
             text1 = smallfont.render("Press any key to start the game", True, (i, i, i))
@@ -415,6 +419,9 @@ while True:
             text3 = font.render("Game over", True, red)
             text3pos = text3.get_rect(centerx=background.get_width() / 2)
             text3pos.top = 300
+            text4 = smallfont.render(f"You reached level {nrow - 3}!", True, white)
+            text4pos = text4.get_rect(centerx=background.get_width() / 2)
+            text4pos.top = 350
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
@@ -446,6 +453,7 @@ while True:
                 screen.blit(text2, text2pos)
             elif result == "Defeat":
                 screen.blit(text3, text3pos)
+                screen.blit(text4, text4pos)
             pygame.display.flip()
 
     top = 50
