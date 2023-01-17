@@ -147,7 +147,7 @@ def load_theme(mode, theme=1):
 
 
 def pausecheck():
-    global event, paused, game_over, result
+    global event, paused, game_over, result, nextlevel
     while paused:
         pauseclose = False
         pausetext = smallfont.render("||", True, white)
@@ -208,6 +208,7 @@ def pausecheck():
                         pauseclose = True
                         result = None
                         game_over = True
+                        nextlevel = False
                 if event.type == pygame.MOUSEMOTION:
                     if item1pos.left <= get_mouse_x() <= item1pos.right and \
                             item1pos.top <= get_mouse_y() <= item1pos.bottom:
@@ -280,6 +281,7 @@ def pausecheck():
                             pauseclose = True
                             result = None
                             game_over = True
+                            nextlevel = False
                 elif selected == 3:
                     if event.type == MOUSEBUTTONUP:
                         if item3pos.left <= get_mouse_x() <= item3pos.right and \
@@ -362,6 +364,7 @@ currentspeed = ball.speed
 volume = pygame.mixer.music.get_volume()
 while True:
     game_over = False
+    nextlevel = False
     while not start:
         for i in range(0, 255, 2):
             text1 = smallfont.render("Press any key to start new game", True, (i, i, i))
@@ -402,9 +405,14 @@ while True:
             allsprites.remove(ball)
             allsprites.draw(screen)
             allsprites.add(ball)
+            if not nextlevel:
+                text1 = smallfont.render("Press any key to start new game", True, (i, i, i))
+            else:
+                text1 = smallfont.render("Press any key to start next level", True, (i, i, i))
             screen.blit(text1, text1pos)
             if result == "Victory":
                 screen.blit(text2, text2pos)
+                nextlevel = True
             elif result == "Defeat":
                 screen.blit(text3, text3pos)
                 screen.blit(text4, text4pos)
@@ -448,9 +456,14 @@ while True:
             allsprites.remove(ball)
             allsprites.draw(screen)
             allsprites.add(ball)
+            if not nextlevel:
+                text1 = smallfont.render("Press any key to start new game", True, (i, i, i))
+            else:
+                text1 = smallfont.render("Press any key to start next level", True, (i, i, i))
             screen.blit(text1, text1pos)
             if result == "Victory":
                 screen.blit(text2, text2pos)
+                nextlevel = True
             elif result == "Defeat":
                 screen.blit(text3, text3pos)
                 screen.blit(text4, text4pos)
