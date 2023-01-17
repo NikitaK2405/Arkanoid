@@ -100,6 +100,7 @@ pygame.event.set_grab(True)
 font = pygame.font.SysFont('Courier', 45, bold=True)
 mediumfont = pygame.font.SysFont('Courier', 36, bold=True)
 smallfont = pygame.font.SysFont('Courier', 35, bold=True)
+littlefont = pygame.font.SysFont('Courier', 25, bold=True)
 whoosh = pygame.mixer.Sound(os.path.join("audio", "introwhoosh.wav"))
 bounce = pygame.mixer.Sound(os.path.join("audio", "bounce.wav"))
 themes = [1, 2, 3, 4, 5]
@@ -147,7 +148,7 @@ def load_theme(mode, theme=1):
 
 
 def pausecheck():
-    global event, paused, game_over, result, nextlevel
+    global event, paused, game_over, result, nextlevel, score
     while paused:
         pauseclose = False
         pausetext = smallfont.render("||", True, white)
@@ -209,6 +210,7 @@ def pausecheck():
                         result = None
                         game_over = True
                         nextlevel = False
+                        score = 0
                 if event.type == pygame.MOUSEMOTION:
                     if item1pos.left <= get_mouse_x() <= item1pos.right and \
                             item1pos.top <= get_mouse_y() <= item1pos.bottom:
@@ -282,6 +284,7 @@ def pausecheck():
                             result = None
                             game_over = True
                             nextlevel = False
+                            score = 0
                 elif selected == 3:
                     if event.type == MOUSEBUTTONUP:
                         if item3pos.left <= get_mouse_x() <= item3pos.right and \
@@ -358,6 +361,7 @@ def intro():
 intro()
 
 result = None
+score = 0
 speedup = False
 shift = False
 currentspeed = ball.speed
@@ -376,7 +380,7 @@ while True:
             text3 = font.render("Game over", True, red)
             text3pos = text3.get_rect(centerx=background.get_width() / 2)
             text3pos.top = 300
-            text4 = smallfont.render(f"You reached level {nrow - 3}!", True, white)
+            text4 = littlefont.render(f"Your score is {score}", True, white)
             text4pos = text4.get_rect(centerx=background.get_width() / 2)
             text4pos.top = 350
             for event in pygame.event.get():
@@ -394,6 +398,7 @@ while True:
                                 sys.exit()
                     else:
                         start = True
+                        score = 0
                         break
             if start:
                 load_theme(True)
@@ -409,11 +414,20 @@ while True:
                 text1 = smallfont.render("Press any key to start new game", True, (i, i, i))
             else:
                 text1 = smallfont.render("Press any key to start next level", True, (i, i, i))
+            text1pos = text1.get_rect(centerx=background.get_width() / 2)
+            text1pos.top = 400
             screen.blit(text1, text1pos)
             if result == "Victory":
                 screen.blit(text2, text2pos)
                 nextlevel = True
             elif result == "Defeat":
+                if nrow - 3 == 1:
+                    text4 = littlefont.render(f"Your score is {score}", True, white)
+                else:
+                    text4 = littlefont.render(f"You reached level {nrow - 3} and your score is {score}",
+                                              True, white)
+                text4pos = text4.get_rect(centerx=background.get_width() / 2)
+                text4pos.top = 350
                 screen.blit(text3, text3pos)
                 screen.blit(text4, text4pos)
             pygame.display.flip()
@@ -427,7 +441,7 @@ while True:
             text3 = font.render("Game over", True, red)
             text3pos = text3.get_rect(centerx=background.get_width() / 2)
             text3pos.top = 300
-            text4 = smallfont.render(f"You reached level {nrow - 3}!", True, white)
+            text4 = littlefont.render(f"Yor score is {score}", True, white)
             text4pos = text4.get_rect(centerx=background.get_width() / 2)
             text4pos.top = 350
             for event in pygame.event.get():
@@ -460,11 +474,20 @@ while True:
                 text1 = smallfont.render("Press any key to start new game", True, (i, i, i))
             else:
                 text1 = smallfont.render("Press any key to start next level", True, (i, i, i))
+            text1pos = text1.get_rect(centerx=background.get_width() / 2)
+            text1pos.top = 400
             screen.blit(text1, text1pos)
             if result == "Victory":
                 screen.blit(text2, text2pos)
                 nextlevel = True
             elif result == "Defeat":
+                if nrow - 3 == 1:
+                    text4 = littlefont.render(f"Your score is {score}", True, white)
+                else:
+                    text4 = littlefont.render(f"You reached level {nrow - 3} and your score is {score}",
+                                              True, white)
+                text4pos = text4.get_rect(centerx=background.get_width() / 2)
+                text4pos.top = 350
                 screen.blit(text3, text3pos)
                 screen.blit(text4, text4pos)
             pygame.display.flip()
@@ -536,6 +559,7 @@ while True:
         deadblocks = pygame.sprite.spritecollide(ball, blocks, True)
         if len(deadblocks) > 0:
             ball.bounce(0)
+            score += len(deadblocks)
             if len(blocks) == 0:
                 result = "Victory"
                 whoosh.play()
