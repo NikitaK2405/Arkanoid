@@ -364,7 +364,7 @@ while True:
     game_over = False
     while not start:
         for i in range(0, 255, 2):
-            text1 = smallfont.render("Press any key to start the game", True, (i, i, i))
+            text1 = smallfont.render("Press any key to start new game", True, (i, i, i))
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
             text1pos.top = 400
             text2 = font.render("You win!", True, green)
@@ -410,7 +410,7 @@ while True:
                 screen.blit(text4, text4pos)
             pygame.display.flip()
         for i in range(255, 0, -2):
-            text1 = smallfont.render("Press any key to start the game", True, (i, i, i))
+            text1 = smallfont.render("Press any key to start new game", True, (i, i, i))
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
             text1pos.top = 400
             text2 = font.render("You win!", True, green)
