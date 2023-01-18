@@ -100,7 +100,6 @@ pygame.event.set_grab(True)
 font = pygame.font.SysFont('Courier', 45, bold=True)
 mediumfont = pygame.font.SysFont('Courier', 36, bold=True)
 smallfont = pygame.font.SysFont('Courier', 35, bold=True)
-littlefont = pygame.font.SysFont('Courier', 25, bold=True)
 whoosh = pygame.mixer.Sound(os.path.join("audio", "introwhoosh.wav"))
 bounce = pygame.mixer.Sound(os.path.join("audio", "bounce.wav"))
 themes = [1, 2, 3, 4, 5]
@@ -148,7 +147,7 @@ def load_theme(mode, theme=1):
 
 
 def pausecheck():
-    global event, paused, game_over, result, nextlevel, score
+    global event, paused, game_over, result, nextlevel, score, allsprites, blocks, nrow, level
     while paused:
         pauseclose = False
         pausetext = smallfont.render("||", True, white)
@@ -210,7 +209,14 @@ def pausecheck():
                         result = None
                         game_over = True
                         nextlevel = False
+                        nrow = 4
                         score = 0
+                        level = 1
+                        deadblocks.clear()
+                        allsprites = pygame.sprite.Group()
+                        allsprites.add(ball)
+                        allsprites.add(player)
+                        blocks = pygame.sprite.Group()
                 if event.type == pygame.MOUSEMOTION:
                     if item1pos.left <= get_mouse_x() <= item1pos.right and \
                             item1pos.top <= get_mouse_y() <= item1pos.bottom:
@@ -284,7 +290,14 @@ def pausecheck():
                             result = None
                             game_over = True
                             nextlevel = False
+                            nrow = 4
                             score = 0
+                            level = 1
+                            deadblocks.clear()
+                            allsprites = pygame.sprite.Group()
+                            allsprites.add(ball)
+                            allsprites.add(player)
+                            blocks = pygame.sprite.Group()
                 elif selected == 3:
                     if event.type == MOUSEBUTTONUP:
                         if item3pos.left <= get_mouse_x() <= item3pos.right and \
@@ -301,7 +314,7 @@ def intro():
         for i in range(0, 255, 2):
             text = smallfont.render("Press any key to start the game", True, (i, i, i))
             textpos = text.get_rect(centerx=background.get_width() / 2)
-            textpos.top = 400
+            textpos.top = 450
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
@@ -330,7 +343,7 @@ def intro():
         for i in range(255, 0, -2):
             text = smallfont.render("Press any key to start the game", True, (i, i, i))
             textpos = text.get_rect(centerx=background.get_width() / 2)
-            textpos.top = 400
+            textpos.top = 450
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
@@ -362,6 +375,8 @@ intro()
 
 result = None
 score = 0
+level = 1
+deadblocks = []
 speedup = False
 shift = False
 currentspeed = ball.speed
@@ -373,14 +388,14 @@ while True:
         for i in range(0, 255, 2):
             text1 = smallfont.render("Press any key to start new game", True, (i, i, i))
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
-            text1pos.top = 400
+            text1pos.top = 450
             text2 = font.render("You win!", True, green)
             text2pos = text2.get_rect(centerx=background.get_width() / 2)
             text2pos.top = 300
             text3 = font.render("Game over", True, red)
             text3pos = text3.get_rect(centerx=background.get_width() / 2)
             text3pos.top = 300
-            text4 = littlefont.render(f"Your score is {score}", True, white)
+            text4 = smallfont.render(f"Your score is {score}", True, white)
             text4pos = text4.get_rect(centerx=background.get_width() / 2)
             text4pos.top = 350
             for event in pygame.event.get():
@@ -398,7 +413,11 @@ while True:
                                 sys.exit()
                     else:
                         start = True
-                        score = 0
+                        deadblocks.clear()
+                        allsprites = pygame.sprite.Group()
+                        allsprites.add(ball)
+                        allsprites.add(player)
+                        blocks = pygame.sprite.Group()
                         break
             if start:
                 load_theme(True)
@@ -415,17 +434,20 @@ while True:
             else:
                 text1 = smallfont.render("Press any key to start next level", True, (i, i, i))
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
-            text1pos.top = 400
+            text1pos.top = 450
             screen.blit(text1, text1pos)
             if result == "Victory":
                 screen.blit(text2, text2pos)
                 nextlevel = True
             elif result == "Defeat":
-                if nrow - 3 == 1:
-                    text4 = littlefont.render(f"Your score is {score}", True, white)
+                if level == 1:
+                    text4 = smallfont.render(f"Your score is {score}", True, white)
                 else:
-                    text4 = littlefont.render(f"You reached level {nrow - 3} and your score is {score}",
-                                              True, white)
+                    text4 = smallfont.render(f"You reached level {level}", True, white)
+                    text5 = smallfont.render(f"and your score is {score}", True, white)
+                    text5pos = text5.get_rect(centerx=background.get_width() / 2)
+                    text5pos.top = 400
+                    screen.blit(text5, text5pos)
                 text4pos = text4.get_rect(centerx=background.get_width() / 2)
                 text4pos.top = 350
                 screen.blit(text3, text3pos)
@@ -434,14 +456,14 @@ while True:
         for i in range(255, 0, -2):
             text1 = smallfont.render("Press any key to start new game", True, (i, i, i))
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
-            text1pos.top = 400
+            text1pos.top = 450
             text2 = font.render("You win!", True, green)
             text2pos = text2.get_rect(centerx=background.get_width() / 2)
             text2pos.top = 300
             text3 = font.render("Game over", True, red)
             text3pos = text3.get_rect(centerx=background.get_width() / 2)
             text3pos.top = 300
-            text4 = littlefont.render(f"Yor score is {score}", True, white)
+            text4 = smallfont.render(f"Yor score is {score}", True, white)
             text4pos = text4.get_rect(centerx=background.get_width() / 2)
             text4pos.top = 350
             for event in pygame.event.get():
@@ -450,6 +472,11 @@ while True:
                     sys.exit()
                 if event.type == MOUSEBUTTONDOWN:
                     start = True
+                    deadblocks.clear()
+                    allsprites = pygame.sprite.Group()
+                    allsprites.add(ball)
+                    allsprites.add(player)
+                    blocks = pygame.sprite.Group()
                     break
                 if event.type == KEYDOWN:
                     if event.key == K_LALT or event.key == K_RALT:
@@ -459,6 +486,11 @@ while True:
                                 sys.exit()
                     else:
                         start = True
+                        deadblocks.clear()
+                        allsprites = pygame.sprite.Group()
+                        allsprites.add(ball)
+                        allsprites.add(player)
+                        blocks = pygame.sprite.Group()
                         break
             if start:
                 load_theme(True)
@@ -475,34 +507,43 @@ while True:
             else:
                 text1 = smallfont.render("Press any key to start next level", True, (i, i, i))
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
-            text1pos.top = 400
+            text1pos.top = 450
             screen.blit(text1, text1pos)
             if result == "Victory":
                 screen.blit(text2, text2pos)
                 nextlevel = True
             elif result == "Defeat":
-                if nrow - 3 == 1:
-                    text4 = littlefont.render(f"Your score is {score}", True, white)
+                if level == 1:
+                    text4 = smallfont.render(f"Your score is {score}", True, white)
                 else:
-                    text4 = littlefont.render(f"You reached level {nrow - 3} and your score is {score}",
-                                              True, white)
+                    text4 = smallfont.render(f"You reached level {level}", True, white)
+                    text5 = smallfont.render(f"and your score is {score}", True, white)
+                    text5pos = text5.get_rect(centerx=background.get_width() / 2)
+                    text5pos.top = 400
+                    screen.blit(text5, text5pos)
                 text4pos = text4.get_rect(centerx=background.get_width() / 2)
                 text4pos.top = 350
                 screen.blit(text3, text3pos)
                 screen.blit(text4, text4pos)
             pygame.display.flip()
 
+    if result == "Defeat":
+        nrow = 4
+        score = 0
+        level = 1
+    elif result == "Victory":
+        level += 1
     top = 50
     for row in range(nrow):
-        for column in range(0, ncolumn):
+        for column in range(ncolumn):
             block = Block(random.choice(colors), column * (block_width + 2) + 1, top)
             blocks.add(block)
             allsprites.add(block)
         top += block_height + 2
-    ball.x = random.randint(0, 780)
+    ball.x = random.randint(20, 740)
     ball.y = startballpos
     ball.direction = random.choice(ball.directions)
-    ball.speed = 1.2
+    ball.speed = 1 + level / 10
 
     while not game_over:
         clock.tick(fps)
