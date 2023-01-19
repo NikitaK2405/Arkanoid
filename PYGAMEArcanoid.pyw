@@ -404,6 +404,11 @@ while True:
                     sys.exit()
                 if event.type == MOUSEBUTTONDOWN:
                     start = True
+                    deadblocks.clear()
+                    allsprites = pygame.sprite.Group()
+                    allsprites.add(ball)
+                    allsprites.add(player)
+                    blocks = pygame.sprite.Group()
                     break
                 if event.type == KEYDOWN:
                     if event.key == K_LALT or event.key == K_RALT:
@@ -424,6 +429,10 @@ while True:
                 pygame.mixer.music.queue(load_theme(True))
                 pygame.mixer.music.play()
                 break
+            if player.rect.y < player.screenheight - player.height - 2:
+                player.rect.y += 1
+            for b in blocks:
+                b.rect.y += random.randint(2, 4)
             clock.tick(fps)
             screen.fill(black)
             allsprites.remove(ball)
@@ -497,6 +506,10 @@ while True:
                 pygame.mixer.music.queue(load_theme(True))
                 pygame.mixer.music.play()
                 break
+            if player.rect.y < player.screenheight - player.height - 2:
+                player.rect.y += 1
+            for b in blocks:
+                b.rect.y += random.randint(2, 4)
             clock.tick(fps)
             screen.fill(black)
             allsprites.remove(ball)
@@ -534,6 +547,7 @@ while True:
     elif result == "Victory":
         level += 1
     top = 50
+    player.rect.y = player.screenheight - player.height - 2
     for row in range(nrow):
         for column in range(ncolumn):
             block = Block(random.choice(colors), column * (block_width + 2) + 1, top)
