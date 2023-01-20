@@ -94,7 +94,7 @@ os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode([800, 600])
-pygame.display.set_caption("Arcanoid")
+pygame.display.set_caption("Arkanoid")
 pygame.mouse.set_visible(False)
 pygame.event.set_grab(True)
 font = pygame.font.SysFont('Courier', 45, bold=True)
