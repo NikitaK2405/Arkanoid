@@ -7,6 +7,9 @@ from pygame.locals import *
 
 
 class Block(pygame.sprite.Sprite):
+
+    """Класс для всех этих радужных блоков, которые нужно сбивать"""
+
     def __init__(self, color, x, y):
         super().__init__()
         self.image = pygame.image.load(os.path.join("images", f"{color}block.png"))
@@ -16,6 +19,9 @@ class Block(pygame.sprite.Sprite):
 
 
 class Ball(pygame.sprite.Sprite):
+
+    """На самом деле это квадрат"""
+
     speed = 0
     x = 0
     y = 0
@@ -60,6 +66,9 @@ class Ball(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
+
+    """Плеер - дальше. Это Ракетка."""
+
     def __init__(self):
         super().__init__()
         self.width = 100
@@ -116,15 +125,15 @@ start = False
 paused = False
 
 
-def get_mouse_x():
+def get_mouse_x():  # Функция для нахождения абсциссы указателя в данный момент.
     return pygame.mouse.get_pos()[0]
 
 
-def get_mouse_y():
+def get_mouse_y():  # Функция для нахождения ординаты указателя в данный момент.
     return pygame.mouse.get_pos()[1]
 
 
-def load_theme(mode, theme=1):
+def load_theme(mode, theme=1):  # Собственно Плеер.
     loaded = ""
     if mode:
         theme = random.randint(1, 5)
@@ -146,7 +155,7 @@ def load_theme(mode, theme=1):
     return loaded
 
 
-def pausecheck():
+def pausecheck():  # Функция, отвечающая за паузу
     global event, paused, game_over, result, nextlevel, score, allsprites, blocks, nrow, level
     while paused:
         pauseclose = False
@@ -307,7 +316,7 @@ def pausecheck():
             pygame.display.flip()
 
 
-def intro():
+def intro():  # Приветственный экран в начале игры
     global start, i, event
     whoosh.play()
     while not start:
