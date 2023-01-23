@@ -32,7 +32,7 @@ class Ball(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(os.path.join("images", "ball.png"))
+        self.image = pygame.image.load(os.path.join("images", "ballframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
@@ -73,7 +73,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.width = 100
         self.height = 15
-        self.image = pygame.image.load(os.path.join("images", "player.png"))
+        self.image = pygame.image.load(os.path.join("images", "playerframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
@@ -633,6 +633,9 @@ while True:
         level += 1
 
     top = 50
+    ballframe = 1
+    playerframe = 1
+    framecount = 1
     player.rect.y = player.screenheight - player.height - 2
 
     for row in range(nrow):  # Отрисовка блоков
@@ -717,6 +720,17 @@ while True:
                     nrow += 1
                     startballpos += block_height
 
+        if framecount == fps:
+            ballframe += 1
+            playerframe += 1
+            framecount = 1
+        if ballframe == 3:
+            ballframe = 1
+        if playerframe == 3:
+            playerframe = 1
+        ball.image = pygame.image.load(os.path.join("images", f"ballframe{ballframe}.png"))
+        player.image = pygame.image.load(os.path.join("images", f"playerframe{playerframe}.png"))
+        framecount += 1
         allsprites.draw(screen)
         pygame.display.flip()
         start = False
