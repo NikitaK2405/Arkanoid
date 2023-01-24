@@ -7,19 +7,17 @@ from pygame.locals import *
 
 
 class Block(pygame.sprite.Sprite):
-
     """Класс для всех этих радужных блоков, которые нужно сбивать"""
 
     def __init__(self, color, x, y):
         super().__init__()
-        self.image = pygame.image.load(os.path.join("images", f"{color}block.png"))
+        self.image = pygame.image.load(os.path.join("images", "blocks", f"{color}block.png"))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
 
 class Ball(pygame.sprite.Sprite):
-
     """На самом деле это квадрат"""
 
     speed = 0
@@ -32,7 +30,7 @@ class Ball(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(os.path.join("images", "ballframe1.png"))
+        self.image = pygame.image.load(os.path.join("images", "ball", "ballframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
@@ -66,14 +64,13 @@ class Ball(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-
     """Плеер - дальше. Это Ракетка."""
 
     def __init__(self):
         super().__init__()
         self.width = 100
         self.height = 15
-        self.image = pygame.image.load(os.path.join("images", "playerframe1.png"))
+        self.image = pygame.image.load(os.path.join("images", "player", "playerframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
@@ -120,8 +117,8 @@ mediumfont = pygame.font.SysFont('Courier', 36, bold=True)
 smallfont = pygame.font.SysFont('Courier', 35, bold=True)
 
 # Звуки
-whoosh = pygame.mixer.Sound(os.path.join("audio", "introwhoosh.wav"))
-bounce = pygame.mixer.Sound(os.path.join("audio", "bounce.wav"))
+whoosh = pygame.mixer.Sound(os.path.join("audio", "sounds", "introwhoosh.wav"))
+bounce = pygame.mixer.Sound(os.path.join("audio", "sounds", "bounce.wav"))
 themes = [1, 2, 3, 4, 5]
 
 player = Player()  # Создание ракетки
@@ -153,25 +150,37 @@ def load_theme(mode, theme=1):  # Собственно Плеер.
     if mode:
         theme = random.randint(1, 5)
     if theme == 1:
-        pygame.mixer.music.load(os.path.join("audio", "Viscid_ErrorRate.mp3"))
-        loaded = os.path.join("audio", "Viscid_ErrorRate.mp3")
+        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_ErrorRate.mp3"))
+        loaded = os.path.join("audio", "themes", "Viscid_ErrorRate.mp3")
     elif theme == 2:
-        pygame.mixer.music.load(os.path.join("audio", "Viscid_Humdrum.mp3"))
-        loaded = os.path.join("audio", "Viscid_Humdrum.mp3")
+        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Humdrum.mp3"))
+        loaded = os.path.join("audio", "themes", "Viscid_Humdrum.mp3")
     elif theme == 3:
-        pygame.mixer.music.load(os.path.join("audio", "Viscid_Ictus.mp3"))
-        loaded = os.path.join("audio", "Viscid_Ictus.mp3")
+        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Ictus.mp3"))
+        loaded = os.path.join("audio", "themes", "Viscid_Ictus.mp3")
     elif theme == 4:
-        pygame.mixer.music.load(os.path.join("audio", "Viscid_Plunge.mp3"))
-        loaded = os.path.join("audio", "Viscid_Plunge.mp3")
+        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Plunge.mp3"))
+        loaded = os.path.join("audio", "themes", "Viscid_Plunge.mp3")
     elif theme == 5:
-        pygame.mixer.music.load(os.path.join("audio", "Viscid_Zigzag.mp3"))
-        loaded = os.path.join("audio", "Viscid_Zigzag.mp3")
+        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Zigzag.mp3"))
+        loaded = os.path.join("audio", "themes", "Viscid_Zigzag.mp3")
     return loaded
 
 
 def pausecheck():  # Функция, отвечающая за паузу
-    global event, paused, game_over, result, nextlevel, score, allsprites, blocks, nrow, level
+    global event,   \
+        paused,     \
+        game_over,  \
+        result,     \
+        nextlevel,  \
+        score,      \
+        allsprites, \
+        blocks,     \
+        nrow,       \
+        level,      \
+        ballframe,  \
+        playerframe,\
+        framecount
     while paused:
         pauseclose = False
 
@@ -354,6 +363,22 @@ def pausecheck():  # Функция, отвечающая за паузу
                             pygame.quit()
                             sys.exit()
 
+            # Анимация мячика и ракетки
+            if framecount == fps:
+                ballframe += 1
+                playerframe += 1
+                framecount = 1
+            if framecount % (fps // 6) == 0:
+                ballframe += 1
+                playerframe += 1
+            if ballframe == 9:
+                ballframe = 1
+            if playerframe == 14:
+                playerframe = 1
+            ball.image = pygame.image.load(os.path.join("images", "ball", f"ballframe{ballframe}.png"))
+            player.image = pygame.image.load(os.path.join("images", "player", f"playerframe{playerframe}.png"))
+            framecount += 1
+
             pygame.display.flip()
 
 
@@ -432,6 +457,9 @@ intro()  # Отображение начального экрана
 deadblocks = []
 score = 0
 level = 1
+ballframe = 1
+playerframe = 1
+framecount = 1
 
 result = None
 speedup = False
@@ -720,17 +748,22 @@ while True:
                     nrow += 1
                     startballpos += block_height
 
+        # Анимация мячика и ракетки
         if framecount == fps:
             ballframe += 1
             playerframe += 1
             framecount = 1
-        if ballframe == 3:
+        if framecount % (fps // 6) == 0:
+            ballframe += 1
+            playerframe += 1
+        if ballframe == 9:
             ballframe = 1
-        if playerframe == 3:
+        if playerframe == 14:
             playerframe = 1
-        ball.image = pygame.image.load(os.path.join("images", f"ballframe{ballframe}.png"))
-        player.image = pygame.image.load(os.path.join("images", f"playerframe{playerframe}.png"))
+        ball.image = pygame.image.load(os.path.join("images", "ball", f"ballframe{ballframe}.png"))
+        player.image = pygame.image.load(os.path.join("images", "player", f"playerframe{playerframe}.png"))
         framecount += 1
+
         allsprites.draw(screen)
         pygame.display.flip()
         start = False
