@@ -365,21 +365,22 @@ def pausecheck():  # Функция, отвечающая за паузу
 
             # Анимация мячика и ракетки
             if framecount == fps:
-                ballframe += 1
-                playerframe += 1
+                ballframe -= 1
+                playerframe -= 1
                 framecount = 1
             if framecount % (fps // 6) == 0:
-                ballframe += 1
-                playerframe += 1
-            if ballframe == 9:
-                ballframe = 1
-            if playerframe == 14:
-                playerframe = 1
+                ballframe -= 1
+                playerframe -= 1
+            if ballframe == 0:
+                ballframe = 8
+            if playerframe == 0:
+                playerframe = 13
             ball.image = pygame.image.load(os.path.join("images", "ball", f"ballframe{ballframe}.png"))
             player.image = pygame.image.load(os.path.join("images", "player", f"playerframe{playerframe}.png"))
             framecount += 1
 
             pygame.display.flip()
+            clock.tick(fps)
 
 
 def intro():  # Приветственный экран в начале игры
