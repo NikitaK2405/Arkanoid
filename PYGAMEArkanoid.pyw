@@ -1,7 +1,7 @@
 import math
 import os
-import sys
 import random
+import sys
 import pygame
 from pygame.locals import *
 
@@ -136,6 +136,10 @@ allsprites.add(ball)
 start = False
 paused = False
 
+xtext = smallfont.render("X", True, white)
+xpos = xtext.get_rect(centerx=775)
+xpos.top = 5
+
 
 def get_mouse_x():  # Функция для нахождения абсциссы указателя в данный момент.
     return pygame.mouse.get_pos()[0]
@@ -168,18 +172,18 @@ def load_theme(mode, theme=1):  # Собственно Плеер.
 
 
 def pausecheck():  # Функция, отвечающая за паузу
-    global event,   \
-        paused,     \
-        game_over,  \
-        result,     \
-        nextlevel,  \
-        score,      \
+    global event, \
+        paused, \
+        game_over, \
+        result, \
+        nextlevel, \
+        score, \
         allsprites, \
-        blocks,     \
-        nrow,       \
-        level,      \
-        ballframe,  \
-        playerframe,\
+        blocks, \
+        nrow, \
+        level, \
+        ballframe, \
+        playerframe, \
         framecount
     while paused:
         pauseclose = False
@@ -205,6 +209,8 @@ def pausecheck():  # Функция, отвечающая за паузу
         fog.set_alpha(200)
 
         allsprites.draw(screen)
+        if speedup:
+            screen.blit(xtext, xpos)
         screen.blit(fog, (0, 0))
         screen.blit(pausetext, pausepos)
         screen.blit(item1, item1pos)
@@ -214,6 +220,8 @@ def pausecheck():  # Функция, отвечающая за паузу
         selected = 0
         while not pauseclose:
             allsprites.draw(screen)
+            if speedup:
+                screen.blit(xtext, xpos)
             screen.blit(fog, (0, 0))
             screen.blit(pausetext, pausepos)
             screen.blit(item1, item1pos)
@@ -463,7 +471,6 @@ playerframe = 1
 framecount = 1
 
 result = None
-speedup = False
 shift = False
 
 currentspeed = ball.speed
@@ -472,6 +479,7 @@ volume = pygame.mixer.music.get_volume()
 while True:
     game_over = False
     nextlevel = False
+    speedup = False
 
     while not start:
         for i in range(0, 255, 2):
@@ -617,7 +625,8 @@ while True:
             if player.rect.y < player.screenheight - player.height - 2:
                 player.rect.y += 1
             for b in blocks:
-                b.rect.y += random.randint(2, 4)
+                if b.rect.y <= screen.get_height():
+                    b.rect.y += random.randint(2, 4)
 
             clock.tick(fps)
             screen.fill(black)
@@ -677,7 +686,7 @@ while True:
     ball.x = random.randint(20, 740)
     ball.y = startballpos
     ball.direction = random.choice(ball.directions)
-    ball.speed = 1 + level / 10
+    ball.speed = 1.2 + level / 10
 
     while not game_over:  # Главный игровой цикл
         clock.tick(fps)
@@ -728,23 +737,69 @@ while True:
             game_over = True
 
         if pygame.sprite.spritecollide(player, balls, False):  # Отскок мячика от ракетки
-            ball.y -= 5
-            difference = player.rect.centerx - ball.rect.centerx
-            ball.bounce(difference)
-            ball.speed += 0.04
+            x1, y1 = ball.rect.bottomleft
+            x2, y2 = ball.rect.topright
+            x3, y3 = player.rect.bottomleft
+            x4, y4 = player.rect.topright
+
+            width = min(x2, x4) - max(x1, x3)  # ширина пересечения
+            height = min(y1, y3) - max(y2, y4)  # высота пересечения
+            if width < height or ball.rect.top > player.rect.top:
+                ball.direction = (360 - ball.direction) % 360
+                bounce.play()
+            else:
+                ball.y -= 5
+                difference = player.rect.centerx - ball.rect.centerx
+                ball.bounce(difference)
+                ball.speed += 0.04
 
         deadblocks = pygame.sprite.spritecollide(ball, blocks, True)  # Список только что сбитых блоков
 
         if len(deadblocks) > 0:
-            ball.bounce(0)
-            score += len(deadblocks)
+            if len(deadblocks) == 1:
+                hitted = deadblocks[0]
+                x1, y1 = ball.rect.bottomleft
+                x2, y2 = ball.rect.topright
+                x3, y3 = hitted.rect.bottomleft
+                x4, y4 = hitted.rect.topright
+                width = min(x2, x4) - max(x1, x3)  # ширина пересечения
+                height = min(y1, y3) - max(y2, y4)  # высота пересечения
+                if width < height:
+                    ball.direction = (360 - ball.direction) % 360
+                    bounce.play()
+                else:
+                    ball.bounce(0)
+                score += 1
+            else:
+                hitted1 = deadblocks[0]
+                hitted2 = deadblocks[1]
+                hitted_left = min(hitted1.rect.left, hitted2.rect.left)
+                hitted_top = min(hitted1.rect.top, hitted2.rect.top)
+                if hitted1.rect.left == hitted2.rect.left:
+                    hitted_width = 23
+                    hitted_height = 32
+                else:
+                    hitted_width = 48
+                    hitted_height = 15
+                hitted = pygame.Rect(hitted_left, hitted_top, hitted_width, hitted_height)
+                x1, y1 = ball.rect.bottomleft
+                x2, y2 = ball.rect.topright
+                x3, y3 = hitted.bottomleft
+                x4, y4 = hitted.topright
+                width = min(x2, x4) - max(x1, x3)  # ширина пересечения
+                height = min(y1, y3) - max(y2, y4)  # высота пересечения
+                if width < height:
+                    ball.direction = (360 - ball.direction) % 360
+                    bounce.play()
+                else:
+                    ball.bounce(0)
+                score += len(deadblocks)
 
             if len(blocks) == 0:  # Игрок сбил все блоки
                 result = "Victory"
                 whoosh.play()
                 pygame.mixer.music.stop()
                 game_over = True
-
                 if nrow < 10:
                     nrow += 1
                     startballpos += block_height
@@ -766,5 +821,7 @@ while True:
         framecount += 1
 
         allsprites.draw(screen)
+        if speedup:
+            screen.blit(xtext, xpos)
         pygame.display.flip()
         start = False
