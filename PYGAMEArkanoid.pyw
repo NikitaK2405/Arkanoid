@@ -76,11 +76,26 @@ class Player(pygame.sprite.Sprite):
         self.screenwidth = pygame.display.get_surface().get_width()
         self.rect.x = random.randint(0, 725)
         self.rect.y = self.screenheight - self.height - 2
+        self.movemode = 0
 
     def update(self):  # Движение ракетки
-        self.rect.x = get_mouse_x()
-        if self.rect.x > self.screenwidth - self.width:
-            self.rect.x = self.screenwidth - self.width
+        if pygame.key.get_pressed()[K_UP]:
+            if self.rect.y > 450:
+                self.rect.y -= 2
+        if pygame.key.get_pressed()[K_DOWN]:
+            if self.rect.y < 580:
+                self.rect.y += 2
+        if movemode:
+            if pygame.key.get_pressed()[K_LEFT]:
+                if self.rect.x >= 5:
+                    self.rect.x -= 5
+            if pygame.key.get_pressed()[K_RIGHT]:
+                if self.rect.x <= 695:
+                    self.rect.x += 5
+        else:
+            self.rect.x = get_mouse_x()
+            if self.rect.x > self.screenwidth - self.width:
+                self.rect.x = self.screenwidth - self.width
 
 
 # Цвета
@@ -480,6 +495,7 @@ while True:
     game_over = False
     nextlevel = False
     speedup = False
+    movemode = 0
 
     while not start:
         for i in range(0, 255, 2):
@@ -532,7 +548,7 @@ while True:
                 break
 
             # Анимации конца игры
-            if player.rect.y < player.screenheight - player.height - 2:
+            if player.rect.y < 580:
                 player.rect.y += 1
             for b in blocks:
                 b.rect.y += random.randint(2, 4)
@@ -622,7 +638,7 @@ while True:
                 break
 
             # Анимации конца игры
-            if player.rect.y < player.screenheight - player.height - 2:
+            if player.rect.y < 580:
                 player.rect.y += 1
             for b in blocks:
                 if b.rect.y <= screen.get_height():
@@ -674,7 +690,7 @@ while True:
     ballframe = 1
     playerframe = 1
     framecount = 1
-    player.rect.y = player.screenheight - player.height - 2
+    player.rect.y = 580
 
     for row in range(nrow):  # Отрисовка блоков
         for column in range(ncolumn):
@@ -717,13 +733,19 @@ while True:
                         ball.speed *= 2
                     else:
                         ball.speed = currentspeed
+                if event.key == K_LEFT or event.key == K_RIGHT:
+                    movemode = 1
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 4:
-                    if player.rect.y >= 450:
+                    if player.rect.y > 450:
                         player.rect.y -= 5
                 elif event.button == 5:
-                    if player.rect.y <= 580:
+                    if player.rect.y < 580:
                         player.rect.y += 5
+            if event.type == MOUSEMOTION:
+                if movemode:
+                    pygame.mouse.set_pos(player.rect.x, player.rect.y)
+                movemode = 0
 
         pausecheck()
 
