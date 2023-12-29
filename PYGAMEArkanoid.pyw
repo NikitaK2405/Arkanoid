@@ -5,13 +5,17 @@ import sys
 import pygame
 from pygame.locals import *
 
+theme = "DARK"
+
 
 class Block(pygame.sprite.Sprite):
     """Класс для всех этих радужных блоков, которые нужно сбивать"""
 
     def __init__(self, color, x, y):
         super().__init__()
-        self.image = pygame.image.load(os.path.join("images", "blocks", f"{color}block.png"))
+        self.image = pygame.image.load(os.path.join("images",
+                                                    "blocks",
+                                                    f"{color}block.png"))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -30,7 +34,16 @@ class Ball(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(os.path.join("images", "ball", "ballframe1.png"))
+        if theme == "DARK":
+            self.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "dark_theme",
+                                                        "ballframe1.png"))
+        else:
+            self.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "light_theme",
+                                                        "ballframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
@@ -70,7 +83,16 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.width = 100
         self.height = 15
-        self.image = pygame.image.load(os.path.join("images", "player", "playerframe1.png"))
+        if theme == "DARK":
+            self.image = pygame.image.load(os.path.join("images",
+                                                        "player",
+                                                        "dark_theme",
+                                                        "playerframe1.png"))
+        else:
+            self.image = pygame.image.load(os.path.join("images",
+                                                        "player",
+                                                        "light_theme",
+                                                        "playerframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
@@ -102,6 +124,7 @@ class Player(pygame.sprite.Sprite):
 black = (0, 0, 0)
 green = (0, 255, 0)
 lightgrey = (145, 145, 145)
+darkgrey = (110, 110, 110)
 red = (225, 0, 0)
 white = (255, 255, 255)
 colors = ["red", "orange", "yellow", "green", "lightblue", "blue", "purple"]  # Цвета блоков
@@ -121,6 +144,8 @@ screen = pygame.display.set_mode([800, 600])
 background = pygame.Surface(screen.get_size())
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.display.set_caption("Arkanoid")
+icon = pygame.Surface((10, 10))
+pygame.display.set_icon(icon)
 pygame.mouse.set_visible(False)
 pygame.event.set_grab(True)
 clock = pygame.time.Clock()
@@ -134,7 +159,7 @@ smallfont = pygame.font.SysFont('Courier', 35, bold=True)
 # Звуки
 whoosh = pygame.mixer.Sound(os.path.join("audio", "sounds", "introwhoosh.wav"))
 bounce = pygame.mixer.Sound(os.path.join("audio", "sounds", "bounce.wav"))
-themes = [1, 2, 3, 4, 5]
+music_themes = [1, 2, 3, 4, 5]
 
 player = Player()  # Создание ракетки
 ball = Ball()  # Создание мячика
@@ -151,7 +176,10 @@ allsprites.add(ball)
 start = False
 paused = False
 
-xtext = smallfont.render("X", True, white)
+if theme == "DARK":
+    xtext = smallfont.render("X", True, white)
+else:
+    xtext = smallfont.render("X", True, black)
 xpos = xtext.get_rect(centerx=775)
 xpos.top = 5
 
@@ -164,23 +192,23 @@ def get_mouse_y():  # Функция для нахождения ординат�
     return pygame.mouse.get_pos()[1]
 
 
-def load_theme(mode, theme=1):  # Собственно Плеер.
+def load_theme(mode, music_theme=1):  # Собственно Плеер.
     loaded = ""
     if mode:
-        theme = random.randint(1, 5)
-    if theme == 1:
+        music_theme = random.randint(1, 5)
+    if music_theme == 1:
         pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_ErrorRate.mp3"))
         loaded = os.path.join("audio", "themes", "Viscid_ErrorRate.mp3")
-    elif theme == 2:
+    elif music_theme == 2:
         pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Humdrum.mp3"))
         loaded = os.path.join("audio", "themes", "Viscid_Humdrum.mp3")
-    elif theme == 3:
+    elif music_theme == 3:
         pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Ictus.mp3"))
         loaded = os.path.join("audio", "themes", "Viscid_Ictus.mp3")
-    elif theme == 4:
+    elif music_theme == 4:
         pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Plunge.mp3"))
         loaded = os.path.join("audio", "themes", "Viscid_Plunge.mp3")
-    elif theme == 5:
+    elif music_theme == 5:
         pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Zigzag.mp3"))
         loaded = os.path.join("audio", "themes", "Viscid_Zigzag.mp3")
     return loaded
@@ -199,29 +227,35 @@ def pausecheck():  # Функция, отвечающая за паузу
         level,          \
         ballframe,      \
         playerframe,    \
-        framecount
+        framecount,     \
+        theme,          \
+        xtext
     while paused:
         pauseclose = False
-
-        pausetext = smallfont.render("||", True, white)
+        fog = pygame.Surface((800, 600))  # Затемняющая поверхность
+        fog.set_alpha(200)
+        if theme == "DARK":
+            xtext = smallfont.render("X", True, white)
+            pausetext = smallfont.render("||", True, white)
+            item1 = smallfont.render("resume (Esc)", True, white)
+            item2 = smallfont.render("new game (N)", True, white)
+            item3 = smallfont.render("exit (AltF4)", True, white)
+            fog.fill(black)
+        else:
+            xtext = smallfont.render("X", True, black)
+            pausetext = smallfont.render("||", True, black)
+            item1 = smallfont.render("resume (Esc)", True, black)
+            item2 = smallfont.render("new game (N)", True, black)
+            item3 = smallfont.render("exit (AltF4)", True, black)
+            fog.fill(white)
         pausepos = pausetext.get_rect(centerx=25)
         pausepos.top = 5
-
-        item1 = smallfont.render("resume (Esc)", True, white)
         item1pos = item1.get_rect(centerx=background.get_width() / 2)
         item1pos.top = 300
-
-        item2 = smallfont.render("new game (N)", True, white)
         item2pos = item2.get_rect(centerx=background.get_width() / 2)
         item2pos.top = 350
-
-        item3 = smallfont.render("exit (AltF4)", True, white)
         item3pos = item3.get_rect(centerx=background.get_width() / 2)
         item3pos.top = 400
-
-        fog = pygame.Surface((800, 600))  # Затемняющая поверхность
-        fog.fill(black)
-        fog.set_alpha(200)
 
         if speedup:
             screen.blit(xtext, xpos)
@@ -236,7 +270,12 @@ def pausecheck():  # Функция, отвечающая за паузу
         while not pauseclose:
             if speedup:
                 screen.blit(xtext, xpos)
+            if theme == "DARK":
+                fog.fill(black)
+            else:
+                fog.fill(white)
             allsprites.draw(screen)
+            fog.set_alpha(200)
             screen.blit(fog, (0, 0))
             screen.blit(pausetext, pausepos)
             screen.blit(item1, item1pos)
@@ -253,6 +292,11 @@ def pausecheck():  # Функция, отвечающая за паузу
                             if event.key == K_F4:
                                 pygame.quit()
                                 sys.exit()
+                    if event.key == K_t:
+                        if theme == "LIGHT":
+                            theme = "DARK"
+                        else:
+                            theme = "LIGHT"
                     if event.key == K_ESCAPE:
                         pygame.mouse.set_visible(False)
                         pygame.event.set_grab(True)
@@ -262,7 +306,10 @@ def pausecheck():  # Функция, отвечающая за паузу
                         paused = False
                         pauseclose = True
                     if event.key == K_n:
-                        screen.fill(black)
+                        if theme == "DARK":
+                            screen.fill(black)
+                        else:
+                            screen.fill(white)
                         pygame.mouse.set_visible(False)
                         pygame.event.set_grab(True)
                         pygame.mixer.music.set_volume(volume)
@@ -284,62 +331,71 @@ def pausecheck():  # Функция, отвечающая за паузу
                 if event.type == pygame.MOUSEMOTION:
                     if item1pos.left <= get_mouse_x() <= item1pos.right and \
                             item1pos.top <= get_mouse_y() <= item1pos.bottom:
-                        item1 = mediumfont.render("resume (Esc)", True, lightgrey)
+                        if theme == "DARK":
+                            item1 = mediumfont.render("resume (Esc)", True, lightgrey)
+                            item2 = smallfont.render("new game (N)", True, white)
+                            item3 = smallfont.render("exit (AltF4)", True, white)
+                        else:
+                            item1 = mediumfont.render("resume (Esc)", True, darkgrey)
+                            item2 = smallfont.render("new game (N)", True, black)
+                            item3 = smallfont.render("exit (AltF4)", True, black)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
                         item1pos.top = 300
-
-                        item2 = smallfont.render("new game (N)", True, white)
                         item2pos = item2.get_rect(centerx=background.get_width() / 2)
                         item2pos.top = 350
-
-                        item3 = smallfont.render("exit (AltF4)", True, white)
                         item3pos = item3.get_rect(centerx=background.get_width() / 2)
                         item3pos.top = 400
-
                         selected = 1
 
                     elif item2pos.left <= get_mouse_x() <= item2pos.right and \
                             item2pos.top <= get_mouse_y() <= item2pos.bottom:
-                        item1 = smallfont.render("resume (Esc)", True, white)
+                        if theme == "DARK":
+                            item1 = smallfont.render("resume (Esc)", True, white)
+                            item2 = mediumfont.render("new game (N)", True, lightgrey)
+                            item3 = smallfont.render("exit (AltF4)", True, white)
+                        else:
+                            item1 = smallfont.render("resume (Esc)", True, black)
+                            item2 = mediumfont.render("new game (N)", True, darkgrey)
+                            item3 = smallfont.render("exit (AltF4)", True, black)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
                         item1pos.top = 300
-
-                        item2 = mediumfont.render("new game (N)", True, lightgrey)
                         item2pos = item2.get_rect(centerx=background.get_width() / 2)
                         item2pos.top = 350
-
-                        item3 = smallfont.render("exit (AltF4)", True, white)
                         item3pos = item3.get_rect(centerx=background.get_width() / 2)
                         item3pos.top = 400
-
                         selected = 2
 
                     elif item3pos.left <= get_mouse_x() <= item3pos.right and \
                             item3pos.top <= get_mouse_y() <= item3pos.bottom:
-                        item1 = smallfont.render("resume (Esc)", True, white)
+                        if theme == "DARK":
+                            item1 = smallfont.render("resume (Esc)", True, white)
+                            item2 = smallfont.render("new game (N)", True, white)
+                            item3 = mediumfont.render("exit (AltF4)", True, lightgrey)
+                        else:
+                            item1 = smallfont.render("resume (Esc)", True, black)
+                            item2 = smallfont.render("new game (N)", True, black)
+                            item3 = mediumfont.render("exit (AltF4)", True, darkgrey)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
                         item1pos.top = 300
-
-                        item2 = smallfont.render("new game (N)", True, white)
                         item2pos = item2.get_rect(centerx=background.get_width() / 2)
                         item2pos.top = 350
-
-                        item3 = mediumfont.render("exit (AltF4)", True, lightgrey)
                         item3pos = item3.get_rect(centerx=background.get_width() / 2)
                         item3pos.top = 400
-
                         selected = 3
 
                     else:
-                        item1 = smallfont.render("resume (Esc)", True, white)
+                        if theme == "DARK":
+                            item1 = smallfont.render("resume (Esc)", True, white)
+                            item2 = smallfont.render("new game (N)", True, white)
+                            item3 = smallfont.render("exit (AltF4)", True, white)
+                        else:
+                            item1 = smallfont.render("resume (Esc)", True, black)
+                            item2 = smallfont.render("new game (N)", True, black)
+                            item3 = smallfont.render("exit (AltF4)", True, black)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
                         item1pos.top = 300
-
-                        item2 = smallfont.render("new game (N)", True, white)
                         item2pos = item2.get_rect(centerx=background.get_width() / 2)
                         item2pos.top = 350
-
-                        item3 = smallfont.render("exit (AltF4)", True, white)
                         item3pos = item3.get_rect(centerx=background.get_width() / 2)
                         item3pos.top = 400
 
@@ -359,7 +415,10 @@ def pausecheck():  # Функция, отвечающая за паузу
                     if event.type == MOUSEBUTTONUP:
                         if item2pos.left <= get_mouse_x() <= item2pos.right and \
                                 item2pos.top <= get_mouse_y() <= item2pos.bottom:
-                            screen.fill(black)
+                            if theme == "DARK":
+                                screen.fill(black)
+                            else:
+                                screen.fill(white)
                             pygame.mouse.set_visible(False)
                             pygame.event.set_grab(True)
                             pygame.mixer.music.set_volume(volume)
@@ -398,8 +457,24 @@ def pausecheck():  # Функция, отвечающая за паузу
                 ballframe = 8
             if playerframe == 0:
                 playerframe = 13
-            ball.image = pygame.image.load(os.path.join("images", "ball", f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images", "player", f"playerframe{playerframe}.png"))
+            if theme == "DARK":
+                ball.image = pygame.image.load(os.path.join("images",
+                                                            "ball",
+                                                            "dark_theme",
+                                                            f"ballframe{ballframe}.png"))
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "dark_theme",
+                                                              f"playerframe{playerframe}.png"))
+            else:
+                ball.image = pygame.image.load(os.path.join("images",
+                                                            "ball",
+                                                            "light_theme",
+                                                            f"ballframe{ballframe}.png"))
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "light_theme",
+                                                              f"playerframe{playerframe}.png"))
             framecount += 1
 
             pygame.display.flip()
@@ -407,7 +482,7 @@ def pausecheck():  # Функция, отвечающая за паузу
 
 
 def intro():  # Приветственный экран в начале игры
-    global start, i, event
+    global start, i, event, theme
     whoosh.play()
 
     while not start:
@@ -429,6 +504,11 @@ def intro():  # Приветственный экран в начале игры
                             if event.key == K_F4:
                                 pygame.quit()
                                 sys.exit()
+                    if event.key == K_t:
+                        if theme == "LIGHT":
+                            theme = "DARK"
+                        else:
+                            theme = "LIGHT"
                     else:
                         start = True
                         break
@@ -439,7 +519,10 @@ def intro():  # Приветственный экран в начале игры
                 break
 
             clock.tick(fps)
-            screen.fill(black)
+            if theme == "DARK":
+                screen.fill(black)
+            else:
+                screen.fill(white)
             screen.blit(text, textpos)
             pygame.display.flip()
 
@@ -461,6 +544,11 @@ def intro():  # Приветственный экран в начале игры
                             if event.key == K_F4:
                                 pygame.quit()
                                 sys.exit()
+                    if event.key == K_t:
+                        if theme == "LIGHT":
+                            theme = "DARK"
+                        else:
+                            theme = "LIGHT"
                     else:
                         start = True
                         break
@@ -471,7 +559,10 @@ def intro():  # Приветственный экран в начале игры
                 break
 
             clock.tick(fps)
-            screen.fill(black)
+            if theme == "DARK":
+                screen.fill(black)
+            else:
+                screen.fill(white)
             screen.blit(text, textpos)
             pygame.display.flip()
 
@@ -511,7 +602,10 @@ while True:
             text3pos = text3.get_rect(centerx=background.get_width() / 2)
             text3pos.top = 300
 
-            text4 = smallfont.render(f"Your score is {score}", True, white)
+            if theme == "DARK":
+                text4 = smallfont.render(f"Your score is {score}", True, white)
+            else:
+                text4 = smallfont.render(f"Your score is {score}", True, black)
             text4pos = text4.get_rect(centerx=background.get_width() / 2)
             text4pos.top = 350
 
@@ -533,6 +627,11 @@ while True:
                             if event.key == K_F4:
                                 pygame.quit()
                                 sys.exit()
+                    if event.key == K_t:
+                        if theme == "LIGHT":
+                            theme = "DARK"
+                        else:
+                            theme = "LIGHT"
                     else:
                         start = True
                         deadblocks.clear()
@@ -554,7 +653,10 @@ while True:
                 b.rect.y += random.randint(2, 4)
 
             clock.tick(fps)
-            screen.fill(black)
+            if theme == "DARK":
+                screen.fill(black)
+            else:
+                screen.fill(white)
             allsprites.remove(ball)
             allsprites.draw(screen)
             allsprites.add(ball)
@@ -573,10 +675,17 @@ while True:
 
             elif result == "Defeat":
                 if level == 1:
-                    text4 = smallfont.render(f"Your score is {score}", True, white)
+                    if theme == "DARK":
+                        text4 = smallfont.render(f"Your score is {score}", True, white)
+                    else:
+                        text4 = smallfont.render(f"Your score is {score}", True, black)
                 else:
-                    text4 = smallfont.render(f"You reached level {level}", True, white)
-                    text5 = smallfont.render(f"and your score is {score}", True, white)
+                    if theme == "DARK":
+                        text4 = smallfont.render(f"You reached level {level}", True, white)
+                        text5 = smallfont.render(f"and your score is {score}", True, white)
+                    else:
+                        text4 = smallfont.render(f"You reached level {level}", True, black)
+                        text5 = smallfont.render(f"and your score is {score}", True, black)
                     text5pos = text5.get_rect(centerx=background.get_width() / 2)
                     text5pos.top = 400
                     screen.blit(text5, text5pos)
@@ -601,7 +710,10 @@ while True:
             text3pos = text3.get_rect(centerx=background.get_width() / 2)
             text3pos.top = 300
 
-            text4 = smallfont.render(f"Yor score is {score}", True, white)
+            if theme == "DARK":
+                text4 = smallfont.render(f"Yor score is {score}", True, white)
+            else:
+                text4 = smallfont.render(f"Yor score is {score}", True, black)
             text4pos = text4.get_rect(centerx=background.get_width() / 2)
             text4pos.top = 350
 
@@ -623,6 +735,11 @@ while True:
                             if event.key == K_F4:
                                 pygame.quit()
                                 sys.exit()
+                    if event.key == K_t:
+                        if theme == "LIGHT":
+                            theme = "DARK"
+                        else:
+                            theme = "LIGHT"
                     else:
                         start = True
                         deadblocks.clear()
@@ -645,7 +762,10 @@ while True:
                     b.rect.y += random.randint(2, 4)
 
             clock.tick(fps)
-            screen.fill(black)
+            if theme == "DARK":
+                screen.fill(black)
+            else:
+                screen.fill(white)
             allsprites.remove(ball)
             allsprites.draw(screen)
             allsprites.add(ball)
@@ -664,10 +784,17 @@ while True:
 
             elif result == "Defeat":
                 if level == 1:
-                    text4 = smallfont.render(f"Your score is {score}", True, white)
+                    if theme == "DARK":
+                        text4 = smallfont.render(f"Your score is {score}", True, white)
+                    else:
+                        text4 = smallfont.render(f"Your score is {score}", True, black)
                 else:
-                    text4 = smallfont.render(f"You reached level {level}", True, white)
-                    text5 = smallfont.render(f"and your score is {score}", True, white)
+                    if theme == "DARK":
+                        text4 = smallfont.render(f"You reached level {level}", True, white)
+                        text5 = smallfont.render(f"and your score is {score}", True, white)
+                    else:
+                        text4 = smallfont.render(f"You reached level {level}", True, black)
+                        text5 = smallfont.render(f"and your score is {score}", True, black)
                     text5pos = text5.get_rect(centerx=background.get_width() / 2)
                     text5pos.top = 400
                     screen.blit(text5, text5pos)
@@ -706,7 +833,12 @@ while True:
 
     while not game_over:  # Главный игровой цикл
         clock.tick(fps)
-        screen.fill(black)
+        if theme == "DARK":
+            screen.fill(black)
+            xtext = smallfont.render("X", True, white)
+        else:
+            screen.fill(white)
+            xtext = smallfont.render("X", True, black)
 
         if pygame.mixer.music.get_endevent():
             pygame.mixer.music.queue(load_theme(True))
@@ -721,6 +853,11 @@ while True:
                         if event.key == K_F4:
                             pygame.quit()
                             sys.exit()
+                if event.key == K_t:
+                    if theme == "LIGHT":
+                        theme = "DARK"
+                    else:
+                        theme = "LIGHT"
                 if event.key == K_ESCAPE:
                     pygame.mouse.set_visible(True)
                     pygame.event.set_grab(False)
@@ -838,8 +975,24 @@ while True:
             ballframe = 1
         if playerframe == 14:
             playerframe = 1
-        ball.image = pygame.image.load(os.path.join("images", "ball", f"ballframe{ballframe}.png"))
-        player.image = pygame.image.load(os.path.join("images", "player", f"playerframe{playerframe}.png"))
+        if theme == "DARK":
+            ball.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "dark_theme",
+                                                        f"ballframe{ballframe}.png"))
+            player.image = pygame.image.load(os.path.join("images",
+                                                          "player",
+                                                          "dark_theme",
+                                                          f"playerframe{playerframe}.png"))
+        else:
+            ball.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "light_theme",
+                                                        f"ballframe{ballframe}.png"))
+            player.image = pygame.image.load(os.path.join("images",
+                                                          "player",
+                                                          "light_theme",
+                                                          f"playerframe{playerframe}.png"))
         framecount += 1
 
         if speedup:
