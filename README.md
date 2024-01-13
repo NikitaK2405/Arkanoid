@@ -1,10 +1,6 @@
 # Arkanoid
-This is a simple game made with Python. I recommend you play the original Arkanoid first.  It's much more fun than mine :)
-Download DOSBox to run original Arkanoid, because it's an MS-DOS executable file.
-https://dosgames.ru/games/dos/arkanoid/
-https://sourceforge.net/projects/dosbox/
-
-About my game:
+This is a simple game made with Python.
+About:
 1. You can move your paddle by moving the mouse or pressing left/right arrows.
 2. The ball reflection angle depends on the difference between center of the paddle and ball position.
 3. When the ball touches the paddle, it accelerates.
