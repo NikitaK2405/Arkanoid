@@ -1,5 +1,6 @@
 # Arkanoid
 This is a simple game made with Python.
+
 About:
 1. You can move your paddle by moving the mouse or pressing left/right arrows.
 2. The ball reflection angle depends on the difference between center of the paddle and ball position.
