@@ -6,6 +6,56 @@ import pygame
 from pygame.locals import *
 
 theme = "DARK"
+# Цвета
+black = (0, 0, 0)
+green = (0, 255, 0)
+lightgrey = (145, 145, 145)
+darkgrey = (110, 110, 110)
+red = (225, 0, 0)
+white = (255, 255, 255)
+colors = ["red", "orange", "yellow", "green", "lightblue", "blue", "purple"]  # Цвета блоков
+
+# Размеры блоков
+block_width = 23
+block_height = 15
+
+# Размеры решётки блоков
+ncolumn = 32
+nrow = 4
+
+pygame.init()  # Инициализация Pygame
+
+# Параметры экрана
+screen = pygame.display.set_mode([800, 600])
+background = pygame.Surface(screen.get_size())
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+pygame.display.set_caption("Arkanoid")
+icon = pygame.Surface((10, 10))
+pygame.display.set_icon(icon)
+pygame.mouse.set_visible(False)
+pygame.event.set_grab(True)
+clock = pygame.time.Clock()
+fps = 90
+
+# Шрифты
+font = pygame.font.SysFont('Courier', 45, bold=True)
+mediumfont = pygame.font.SysFont('Courier', 36, bold=True)
+smallfont = pygame.font.SysFont('Courier', 35, bold=True)
+
+# Звуки
+whoosh = pygame.mixer.Sound(os.path.join("audio", "sounds", "introwhoosh.wav"))
+bounce = pygame.mixer.Sound(os.path.join("audio", "sounds", "bounce.wav"))
+music_themes = [1, 2, 3, 4, 5]
+
+start = False
+paused = False
+
+if theme == "DARK":
+    xtext = smallfont.render("X", True, white)
+else:
+    xtext = smallfont.render("X", True, black)
+xpos = xtext.get_rect(centerx=775)
+xpos.top = 5
 
 
 class Block(pygame.sprite.Sprite):
@@ -124,47 +174,6 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x = self.screenwidth - self.width
 
 
-# Цвета
-black = (0, 0, 0)
-green = (0, 255, 0)
-lightgrey = (145, 145, 145)
-darkgrey = (110, 110, 110)
-red = (225, 0, 0)
-white = (255, 255, 255)
-colors = ["red", "orange", "yellow", "green", "lightblue", "blue", "purple"]  # Цвета блоков
-
-# Размеры блоков
-block_width = 23
-block_height = 15
-
-# Размеры решётки блоков
-ncolumn = 32
-nrow = 4
-
-pygame.init()  # Инициализация Pygame
-
-# Параметры экрана
-screen = pygame.display.set_mode([800, 600])
-background = pygame.Surface(screen.get_size())
-os.environ['SDL_VIDEO_CENTERED'] = '1'
-pygame.display.set_caption("Arkanoid")
-icon = pygame.Surface((10, 10))
-pygame.display.set_icon(icon)
-pygame.mouse.set_visible(False)
-pygame.event.set_grab(True)
-clock = pygame.time.Clock()
-fps = 90
-
-# Шрифты
-font = pygame.font.SysFont('Courier', 45, bold=True)
-mediumfont = pygame.font.SysFont('Courier', 36, bold=True)
-smallfont = pygame.font.SysFont('Courier', 35, bold=True)
-
-# Звуки
-whoosh = pygame.mixer.Sound(os.path.join("audio", "sounds", "introwhoosh.wav"))
-bounce = pygame.mixer.Sound(os.path.join("audio", "sounds", "bounce.wav"))
-music_themes = [1, 2, 3, 4, 5]
-
 player = Player()  # Создание ракетки
 ball = Ball()  # Создание мячика
 startballpos = 180
@@ -177,16 +186,6 @@ allsprites = pygame.sprite.Group()
 allsprites.add(player)
 allsprites.add(ball)
 
-start = False
-paused = False
-
-if theme == "DARK":
-    xtext = smallfont.render("X", True, white)
-else:
-    xtext = smallfont.render("X", True, black)
-xpos = xtext.get_rect(centerx=775)
-xpos.top = 5
-
 
 def get_mouse_x():  # Функция для нахождения абсциссы указателя в данный момент.
     return pygame.mouse.get_pos()[0]
@@ -196,29 +195,15 @@ def get_mouse_y():  # Функция для нахождения ординат�
     return pygame.mouse.get_pos()[1]
 
 
-def load_theme(mode, music_theme=1):  # Собственно Плеер.
-    loaded = ""
-    if mode:
-        music_theme = random.randint(1, 5)
-    if music_theme == 1:
-        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_ErrorRate.mp3"))
-        loaded = os.path.join("audio", "themes", "Viscid_ErrorRate.mp3")
-    elif music_theme == 2:
-        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Humdrum.mp3"))
-        loaded = os.path.join("audio", "themes", "Viscid_Humdrum.mp3")
-    elif music_theme == 3:
-        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Ictus.mp3"))
-        loaded = os.path.join("audio", "themes", "Viscid_Ictus.mp3")
-    elif music_theme == 4:
-        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Plunge.mp3"))
-        loaded = os.path.join("audio", "themes", "Viscid_Plunge.mp3")
-    elif music_theme == 5:
-        pygame.mixer.music.load(os.path.join("audio", "themes", "Viscid_Zigzag.mp3"))
-        loaded = os.path.join("audio", "themes", "Viscid_Zigzag.mp3")
-    return loaded
+def load_theme():  # Собственно Плеер.
+    music_theme = random.randint(1, 5)
+    music = {1: "ErrorRate", 2: "Humdrum", 3: "Ictus", 4: "Plunge", 5: "Zigzag"}
+    music_to_load = os.path.join("audio", "themes", f"Viscid_{music[music_theme]}.mp3")
+    pygame.mixer.music.load(music_to_load)
+    return music_to_load
 
 
-def pausecheck():  # Функция, отвечающая за паузу
+def pausecheck():  # Огромная функция, отвечающая за паузу
     global event,       \
         paused,         \
         game_over,      \
@@ -237,21 +222,18 @@ def pausecheck():  # Функция, отвечающая за паузу
     while paused:
         pauseclose = False
         fog = pygame.Surface((800, 600))  # Затемняющая поверхность
-        fog.set_alpha(200)
         if theme == "DARK":
             xtext = smallfont.render("X", True, white)
             pausetext = smallfont.render("||", True, white)
             item1 = smallfont.render("resume (Esc)", True, white)
             item2 = smallfont.render("new game (N)", True, white)
             item3 = smallfont.render("exit (AltF4)", True, white)
-            fog.fill(black)
         else:
             xtext = smallfont.render("X", True, black)
             pausetext = smallfont.render("||", True, black)
             item1 = smallfont.render("resume (Esc)", True, black)
             item2 = smallfont.render("new game (N)", True, black)
             item3 = smallfont.render("exit (AltF4)", True, black)
-            fog.fill(white)
         pausepos = pausetext.get_rect(centerx=25)
         pausepos.top = 5
         item1pos = item1.get_rect(centerx=background.get_width() / 2)
@@ -261,25 +243,34 @@ def pausecheck():  # Функция, отвечающая за паузу
         item3pos = item3.get_rect(centerx=background.get_width() / 2)
         item3pos.top = 400
 
-        if speedup:
-            screen.blit(xtext, xpos)
-        allsprites.draw(screen)
-        screen.blit(fog, (0, 0))
-        screen.blit(pausetext, pausepos)
-        screen.blit(item1, item1pos)
-        screen.blit(item2, item2pos)
-        screen.blit(item3, item3pos)
-
         selected = 0
         while not pauseclose:
+            if theme == "DARK":
+                xtext = smallfont.render("X", True, white)
+                pausetext = smallfont.render("||", True, white)
+                if selected != 1:
+                    item1 = smallfont.render("resume (Esc)", True, white)
+                if selected != 2:
+                    item2 = smallfont.render("new game (N)", True, white)
+                if selected != 3:
+                    item3 = smallfont.render("exit (AltF4)", True, white)
+            else:
+                xtext = smallfont.render("X", True, black)
+                pausetext = smallfont.render("||", True, black)
+                if selected != 1:
+                    item1 = smallfont.render("resume (Esc)", True, black)
+                if selected != 2:
+                    item2 = smallfont.render("new game (N)", True, black)
+                if selected != 3:
+                    item3 = smallfont.render("exit (AltF4)", True, black)
             if speedup:
                 screen.blit(xtext, xpos)
+            fog.set_alpha(200)
             if theme == "DARK":
                 fog.fill(black)
             else:
                 fog.fill(white)
             allsprites.draw(screen)
-            fog.set_alpha(200)
             screen.blit(fog, (0, 0))
             screen.blit(pausetext, pausepos)
             screen.blit(item1, item1pos)
@@ -306,7 +297,7 @@ def pausecheck():  # Функция, отвечающая за паузу
                         pygame.event.set_grab(True)
                         pygame.mixer.music.set_volume(volume)
                         if pygame.mixer.music.get_endevent():
-                            pygame.mixer.music.queue(load_theme(True))
+                            pygame.mixer.music.queue(load_theme())
                         paused = False
                         pauseclose = True
                     if event.key == K_n:
@@ -318,7 +309,7 @@ def pausecheck():  # Функция, отвечающая за паузу
                         pygame.event.set_grab(True)
                         pygame.mixer.music.set_volume(volume)
                         pygame.mixer.music.stop()
-                        pygame.mixer.music.queue(load_theme(True))
+                        pygame.mixer.music.queue(load_theme())
                         paused = False
                         pauseclose = True
                         result = None
@@ -402,6 +393,7 @@ def pausecheck():  # Функция, отвечающая за паузу
                         item2pos.top = 350
                         item3pos = item3.get_rect(centerx=background.get_width() / 2)
                         item3pos.top = 400
+                        selected = 0
 
                 if selected == 1:  # Продолжение игры
                     if event.type == MOUSEBUTTONUP:
@@ -411,7 +403,7 @@ def pausecheck():  # Функция, отвечающая за паузу
                             pygame.event.set_grab(True)
                             pygame.mixer.music.set_volume(volume)
                             if pygame.mixer.music.get_endevent():
-                                pygame.mixer.music.queue(load_theme(True))
+                                pygame.mixer.music.queue(load_theme())
                             paused = False
                             pauseclose = True
 
@@ -427,7 +419,7 @@ def pausecheck():  # Функция, отвечающая за паузу
                             pygame.event.set_grab(True)
                             pygame.mixer.music.set_volume(volume)
                             pygame.mixer.music.stop()
-                            pygame.mixer.music.queue(load_theme(True))
+                            pygame.mixer.music.queue(load_theme())
                             paused = False
                             pauseclose = True
                             result = None
@@ -448,38 +440,6 @@ def pausecheck():  # Функция, отвечающая за паузу
                                 item3pos.top <= get_mouse_y() <= item3pos.bottom:
                             pygame.quit()
                             sys.exit()
-
-            # Анимация мячика и ракетки
-            if framecount == fps:
-                ballframe -= 1
-                playerframe -= 1
-                framecount = 1
-            if framecount % (fps // 6) == 0:
-                ballframe -= 1
-                playerframe -= 1
-            if ballframe == 0:
-                ballframe = 8
-            if playerframe == 0:
-                playerframe = 13
-            if theme == "DARK":
-                ball.image = pygame.image.load(os.path.join("images",
-                                                            "ball",
-                                                            "dark_theme",
-                                                            f"ballframe{ballframe}.png"))
-                player.image = pygame.image.load(os.path.join("images",
-                                                              "player",
-                                                              "dark_theme",
-                                                              f"playerframe{playerframe}.png"))
-            else:
-                ball.image = pygame.image.load(os.path.join("images",
-                                                            "ball",
-                                                            "light_theme",
-                                                            f"ballframe{ballframe}.png"))
-                player.image = pygame.image.load(os.path.join("images",
-                                                              "player",
-                                                              "light_theme",
-                                                              f"playerframe{playerframe}.png"))
-            framecount += 1
 
             pygame.display.flip()
             clock.tick(fps)
@@ -513,12 +473,12 @@ def intro():  # Приветственный экран в начале игры
                             theme = "DARK"
                         else:
                             theme = "LIGHT"
-                    else:
+                    elif event.key != K_LALT and event.key != K_RALT:
                         start = True
                         break
             if start:
-                load_theme(True)
-                pygame.mixer.music.queue(load_theme(True))
+                load_theme()
+                pygame.mixer.music.queue(load_theme())
                 pygame.mixer.music.play()
                 break
 
@@ -553,12 +513,12 @@ def intro():  # Приветственный экран в начале игры
                             theme = "DARK"
                         else:
                             theme = "LIGHT"
-                    else:
+                    elif event.key != K_LALT and event.key != K_RALT:
                         start = True
                         break
             if start:
-                load_theme(True)
-                pygame.mixer.music.queue(load_theme(True))
+                load_theme()
+                pygame.mixer.music.queue(load_theme())
                 pygame.mixer.music.play()
                 break
 
@@ -636,7 +596,7 @@ while True:
                             theme = "DARK"
                         else:
                             theme = "LIGHT"
-                    else:
+                    elif event.key != K_LALT and event.key != K_RALT:
                         start = True
                         deadblocks.clear()
                         allsprites = pygame.sprite.Group()
@@ -645,8 +605,8 @@ while True:
                         blocks = pygame.sprite.Group()
                         break
             if start:
-                load_theme(True)
-                pygame.mixer.music.queue(load_theme(True))
+                load_theme()
+                pygame.mixer.music.queue(load_theme())
                 pygame.mixer.music.play()
                 break
 
@@ -752,7 +712,7 @@ while True:
                             theme = "DARK"
                         else:
                             theme = "LIGHT"
-                    else:
+                    elif event.key != K_LALT and event.key != K_RALT:
                         start = True
                         deadblocks.clear()
                         allsprites = pygame.sprite.Group()
@@ -761,8 +721,8 @@ while True:
                         blocks = pygame.sprite.Group()
                         break
             if start:
-                load_theme(True)
-                pygame.mixer.music.queue(load_theme(True))
+                load_theme()
+                pygame.mixer.music.queue(load_theme())
                 pygame.mixer.music.play()
                 break
 
@@ -861,7 +821,7 @@ while True:
             xtext = smallfont.render("X", True, black)
 
         if pygame.mixer.music.get_endevent():
-            pygame.mixer.music.queue(load_theme(True))
+            pygame.mixer.music.queue(load_theme())
 
         for event in pygame.event.get():  # Проверка событий
             if event.type == QUIT:
