@@ -35,6 +35,7 @@ pygame.mouse.set_visible(False)
 pygame.event.set_grab(True)
 clock = pygame.time.Clock()
 fps = 90
+developer = "@super_nuke"
 
 # Шрифты
 font = pygame.font.SysFont('Courier', 45, bold=True)
@@ -563,7 +564,7 @@ shift = False
 currentspeed = ball.speed
 volume = pygame.mixer.music.get_volume()
 
-while True:
+while developer == "@super_nuke":
     game_over = False
     nextlevel = False
     speedup = False
