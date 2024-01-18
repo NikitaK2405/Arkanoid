@@ -909,7 +909,15 @@ while developer == "@super_nuke":
                 if difference > 30:
                     difference = 30
                 ball.bounce(difference)
+                if 85 < ball.direction < 180:
+                    ball.direction = 85
+                elif 180 < ball.direction < 275:
+                    ball.direction = 275
                 ball.speed += 0.03
+                if ball.direction < 0:
+                    ball.direction += 360
+                if ball.direction >= 360:
+                    ball.direction -= 360
 
         deadblocks = pygame.sprite.spritecollide(ball, blocks, True)  # Список только что сбитых блоков
 
@@ -950,6 +958,10 @@ while developer == "@super_nuke":
                 else:
                     ball.bounce(0)
                 score += len(deadblocks)
+                if ball.direction < 0:
+                    ball.direction += 360
+                if ball.direction >= 360:
+                    ball.direction -= 360
 
             if len(blocks) == 0:  # Игрок сбил все блоки
                 result = "Victory"
