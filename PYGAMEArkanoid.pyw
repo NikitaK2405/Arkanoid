@@ -54,6 +54,10 @@ class Ball(pygame.sprite.Sprite):
         bounce.play()
 
     def update(self):  # Движение мячика
+        if self.direction < 0:
+            self.direction += 360
+        if self.direction >= 360:
+            self.direction -= 360
         direction_radians = math.radians(self.direction)
         self.x += self.speed * math.sin(direction_radians)
         self.y -= self.speed * math.cos(direction_radians)
