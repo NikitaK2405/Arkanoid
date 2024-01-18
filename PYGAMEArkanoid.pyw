@@ -925,8 +925,10 @@ while True:
             else:
                 ball.y -= 5
                 difference = player.rect.centerx - ball.rect.centerx
+                if difference > 30:
+                    difference = 30
                 ball.bounce(difference)
-                ball.speed += 0.04
+                ball.speed += 0.03
 
         deadblocks = pygame.sprite.spritecollide(ball, blocks, True)  # Список только что сбитых блоков
 
