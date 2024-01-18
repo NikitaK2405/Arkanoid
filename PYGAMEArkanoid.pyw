@@ -102,6 +102,10 @@ class Ball(pygame.sprite.Sprite):
         self.direction -= d
         bounce.play()
 
+    def vertical_bounce(self):
+        self.direction = (360 - self.direction) % 360
+        bounce.play()
+
     def update(self):  # Движение мячика
         if self.direction < 0:
             self.direction += 360
@@ -116,12 +120,10 @@ class Ball(pygame.sprite.Sprite):
             self.bounce(0)
             self.y = 1
         if self.x <= 0:
-            self.direction = (360 - self.direction) % 360
-            bounce.play()
+            self.vertical_bounce()
             self.x = 1
         if self.x > self.screenwidth - self.width:
-            self.direction = (360 - self.direction) % 360
-            bounce.play()
+            self.vertical_bounce()
             self.x = self.screenwidth - self.width - 1
         if self.y > 600:
             return True
@@ -899,8 +901,7 @@ while True:
             width = min(x2, x4) - max(x1, x3)  # ширина пересечения
             height = min(y1, y3) - max(y2, y4)  # высота пересечения
             if width < height or ball.rect.top > player.rect.top:
-                ball.direction = (360 - ball.direction) % 360
-                bounce.play()
+                ball.vertical_bounce()
             else:
                 ball.y -= 5
                 difference = player.rect.centerx - ball.rect.centerx
@@ -921,8 +922,7 @@ while True:
                 width = min(x2, x4) - max(x1, x3)  # ширина пересечения
                 height = min(y1, y3) - max(y2, y4)  # высота пересечения
                 if width < height:
-                    ball.direction = (360 - ball.direction) % 360
-                    bounce.play()
+                    ball.vertical_bounce()
                 else:
                     ball.bounce(0)
                 score += 1
@@ -945,8 +945,7 @@ while True:
                 width = min(x2, x4) - max(x1, x3)  # ширина пересечения
                 height = min(y1, y3) - max(y2, y4)  # высота пересечения
                 if width < height:
-                    ball.direction = (360 - ball.direction) % 360
-                    bounce.play()
+                    ball.vertical_bounce()
                 else:
                     ball.bounce(0)
                 score += len(deadblocks)
