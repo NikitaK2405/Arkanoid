@@ -655,8 +655,16 @@ while True:
             clock.tick(fps)
             if theme == "DARK":
                 screen.fill(black)
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "dark_theme",
+                                                              f"playerframe{playerframe}.png"))
             else:
                 screen.fill(white)
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "light_theme",
+                                                              f"playerframe{playerframe}.png"))
             allsprites.remove(ball)
             allsprites.draw(screen)
             allsprites.add(ball)
@@ -764,8 +772,16 @@ while True:
             clock.tick(fps)
             if theme == "DARK":
                 screen.fill(black)
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "dark_theme",
+                                                              f"playerframe{playerframe}.png"))
             else:
                 screen.fill(white)
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "light_theme",
+                                                              f"playerframe{playerframe}.png"))
             allsprites.remove(ball)
             allsprites.draw(screen)
             allsprites.add(ball)
