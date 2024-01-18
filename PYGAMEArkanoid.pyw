@@ -157,17 +157,17 @@ class Player(pygame.sprite.Sprite):
         self.movemode = 0
 
     def update(self):  # Движение ракетки
-        if pygame.key.get_pressed()[K_UP]:
+        if pygame.key.get_pressed()[K_UP] or pygame.key.get_pressed()[K_w]:
             if self.rect.y > 450:
                 self.rect.y -= 2
-        if pygame.key.get_pressed()[K_DOWN]:
+        if pygame.key.get_pressed()[K_DOWN] or pygame.key.get_pressed()[K_s]:
             if self.rect.y < 580:
                 self.rect.y += 2
         if movemode:
-            if pygame.key.get_pressed()[K_LEFT]:
+            if pygame.key.get_pressed()[K_LEFT] or pygame.key.get_pressed()[K_a]:
                 if self.rect.x >= 5:
                     self.rect.x -= 5
-            if pygame.key.get_pressed()[K_RIGHT]:
+            if pygame.key.get_pressed()[K_RIGHT] or pygame.key.get_pressed()[K_d]:
                 if self.rect.x <= 695:
                     self.rect.x += 5
         else:
@@ -868,7 +868,7 @@ while developer == "@super_nuke":
                         ball.speed *= 2
                     else:
                         ball.speed = currentspeed
-                if event.key == K_LEFT or event.key == K_RIGHT:
+                if event.key == K_LEFT or event.key == K_RIGHT or event.key == K_a or event.key == K_d:
                     movemode = 1
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 4:
