@@ -8,11 +8,10 @@ from pygame.locals import *
 theme = "DARK"
 # Цвета
 black = (0, 0, 0)
-green = (0, 255, 0)
-lightgrey = (145, 145, 145)
-darkgrey = (110, 110, 110)
-red = (225, 0, 0)
 white = (255, 255, 255)
+grey = (128, 128, 128)
+red = (225, 0, 0)
+green = (0, 255, 0)
 colors = ["red", "orange", "yellow", "green", "lightblue", "blue", "purple"]  # Цвета блоков
 
 # Размеры блоков
@@ -254,6 +253,14 @@ def pausecheck():  # Огромная функция, отвечающая за 
                     item2 = smallfont.render("new game (N)", True, white)
                 if selected != 3:
                     item3 = smallfont.render("exit (AltF4)", True, white)
+                ball.image = pygame.image.load(os.path.join("images",
+                                                            "ball",
+                                                            "dark_theme",
+                                                            f"ballframe{ballframe}.png"))
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "dark_theme",
+                                                              f"playerframe{playerframe}.png"))
             else:
                 xtext = smallfont.render("X", True, black)
                 pausetext = smallfont.render("||", True, black)
@@ -263,6 +270,14 @@ def pausecheck():  # Огромная функция, отвечающая за 
                     item2 = smallfont.render("new game (N)", True, black)
                 if selected != 3:
                     item3 = smallfont.render("exit (AltF4)", True, black)
+                ball.image = pygame.image.load(os.path.join("images",
+                                                            "ball",
+                                                            "light_theme",
+                                                            f"ballframe{ballframe}.png"))
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "light_theme",
+                                                              f"playerframe{playerframe}.png"))
             if speedup:
                 screen.blit(xtext, xpos)
             fog.set_alpha(200)
@@ -327,11 +342,11 @@ def pausecheck():  # Огромная функция, отвечающая за 
                     if item1pos.left <= get_mouse_x() <= item1pos.right and \
                             item1pos.top <= get_mouse_y() <= item1pos.bottom:
                         if theme == "DARK":
-                            item1 = mediumfont.render("resume (Esc)", True, lightgrey)
+                            item1 = mediumfont.render("resume (Esc)", True, grey)
                             item2 = smallfont.render("new game (N)", True, white)
                             item3 = smallfont.render("exit (AltF4)", True, white)
                         else:
-                            item1 = mediumfont.render("resume (Esc)", True, darkgrey)
+                            item1 = mediumfont.render("resume (Esc)", True, grey)
                             item2 = smallfont.render("new game (N)", True, black)
                             item3 = smallfont.render("exit (AltF4)", True, black)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
@@ -346,11 +361,11 @@ def pausecheck():  # Огромная функция, отвечающая за 
                             item2pos.top <= get_mouse_y() <= item2pos.bottom:
                         if theme == "DARK":
                             item1 = smallfont.render("resume (Esc)", True, white)
-                            item2 = mediumfont.render("new game (N)", True, lightgrey)
+                            item2 = mediumfont.render("new game (N)", True, grey)
                             item3 = smallfont.render("exit (AltF4)", True, white)
                         else:
                             item1 = smallfont.render("resume (Esc)", True, black)
-                            item2 = mediumfont.render("new game (N)", True, darkgrey)
+                            item2 = mediumfont.render("new game (N)", True, grey)
                             item3 = smallfont.render("exit (AltF4)", True, black)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
                         item1pos.top = 300
@@ -365,11 +380,11 @@ def pausecheck():  # Огромная функция, отвечающая за 
                         if theme == "DARK":
                             item1 = smallfont.render("resume (Esc)", True, white)
                             item2 = smallfont.render("new game (N)", True, white)
-                            item3 = mediumfont.render("exit (AltF4)", True, lightgrey)
+                            item3 = mediumfont.render("exit (AltF4)", True, grey)
                         else:
                             item1 = smallfont.render("resume (Esc)", True, black)
                             item2 = smallfont.render("new game (N)", True, black)
-                            item3 = mediumfont.render("exit (AltF4)", True, darkgrey)
+                            item3 = mediumfont.render("exit (AltF4)", True, grey)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
                         item1pos.top = 300
                         item2pos = item2.get_rect(centerx=background.get_width() / 2)
