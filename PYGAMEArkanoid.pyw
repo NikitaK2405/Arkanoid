@@ -189,6 +189,11 @@ allsprites.add(player)
 allsprites.add(ball)
 
 
+def close_arkanoid():
+    pygame.quit()
+    sys.exit()
+
+
 def get_mouse_x():  # Функция для нахождения абсциссы указателя в данный момент.
     return pygame.mouse.get_pos()[0]
 
@@ -297,14 +302,11 @@ def pausecheck():  # Огромная функция, отвечающая за 
 
             for event in pygame.event.get():  # Проверка событий
                 if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    close_arkanoid()
                 if event.type == KEYDOWN:
-                    if event.key == K_LALT or event.key == K_RALT:
-                        if event.mod == KMOD_ALT:
-                            if event.key == K_F4:
-                                pygame.quit()
-                                sys.exit()
+                    if event.mod == KMOD_ALT:
+                        if event.key == K_F4:
+                            close_arkanoid()
                     if event.key == K_t:
                         if theme == "LIGHT":
                             theme = "DARK"
@@ -456,8 +458,7 @@ def pausecheck():  # Огромная функция, отвечающая за 
                     if event.type == MOUSEBUTTONUP:
                         if item3pos.left <= get_mouse_x() <= item3pos.right and \
                                 item3pos.top <= get_mouse_y() <= item3pos.bottom:
-                            pygame.quit()
-                            sys.exit()
+                            close_arkanoid()
 
             pygame.display.flip()
             clock.tick(fps)
@@ -475,17 +476,14 @@ def intro():  # Приветственный экран в начале игры
 
             for event in pygame.event.get():  # Проверка событий
                 if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    close_arkanoid()
                 if event.type == MOUSEBUTTONDOWN:
                     start = True
                     break
                 if event.type == KEYDOWN:
-                    if event.key == K_LALT or event.key == K_RALT:
-                        if event.mod == KMOD_ALT:
-                            if event.key == K_F4:
-                                pygame.quit()
-                                sys.exit()
+                    if event.mod == KMOD_ALT:
+                        if event.key == K_F4:
+                            close_arkanoid()
                     if event.key == K_t:
                         if theme == "LIGHT":
                             theme = "DARK"
@@ -515,17 +513,14 @@ def intro():  # Приветственный экран в начале игры
 
             for event in pygame.event.get():  # Проверка событий
                 if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    close_arkanoid()
                 if event.type == MOUSEBUTTONDOWN:
                     start = True
                     break
                 if event.type == KEYDOWN:
-                    if event.key == K_LALT or event.key == K_RALT:
-                        if event.mod == KMOD_ALT:
-                            if event.key == K_F4:
-                                pygame.quit()
-                                sys.exit()
+                    if event.mod == KMOD_ALT:
+                        if event.key == K_F4:
+                            close_arkanoid()
                     if event.key == K_t:
                         if theme == "LIGHT":
                             theme = "DARK"
@@ -593,8 +588,7 @@ while developer == "@super_nuke":
 
             for event in pygame.event.get():  # Проверка событий
                 if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    close_arkanoid()
                 if event.type == MOUSEBUTTONDOWN:
                     start = True
                     deadblocks.clear()
@@ -604,11 +598,9 @@ while developer == "@super_nuke":
                     blocks = pygame.sprite.Group()
                     break
                 if event.type == KEYDOWN:
-                    if event.key == K_LALT or event.key == K_RALT:
-                        if event.mod == KMOD_ALT:
-                            if event.key == K_F4:
-                                pygame.quit()
-                                sys.exit()
+                    if event.mod == KMOD_ALT:
+                        if event.key == K_F4:
+                            close_arkanoid()
                     if event.key == K_t:
                         if theme == "LIGHT":
                             theme = "DARK"
@@ -709,8 +701,7 @@ while developer == "@super_nuke":
 
             for event in pygame.event.get():  # Проверка событий
                 if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    close_arkanoid()
                 if event.type == MOUSEBUTTONDOWN:
                     start = True
                     deadblocks.clear()
@@ -720,11 +711,9 @@ while developer == "@super_nuke":
                     blocks = pygame.sprite.Group()
                     break
                 if event.type == KEYDOWN:
-                    if event.key == K_LALT or event.key == K_RALT:
-                        if event.mod == KMOD_ALT:
-                            if event.key == K_F4:
-                                pygame.quit()
-                                sys.exit()
+                    if event.mod == KMOD_ALT:
+                        if event.key == K_F4:
+                            close_arkanoid()
                     if event.key == K_t:
                         if theme == "LIGHT":
                             theme = "DARK"
@@ -843,14 +832,11 @@ while developer == "@super_nuke":
 
         for event in pygame.event.get():  # Проверка событий
             if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+                close_arkanoid()
             if event.type == KEYDOWN:
-                if event.key == K_LALT or event.key == K_RALT:
-                    if event.mod == KMOD_ALT:
-                        if event.key == K_F4:
-                            pygame.quit()
-                            sys.exit()
+                if event.mod == KMOD_ALT:
+                    if event.key == K_F4:
+                        close_arkanoid()
                 if event.key == K_t:
                     if theme == "LIGHT":
                         theme = "DARK"
