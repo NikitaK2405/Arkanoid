@@ -27,7 +27,7 @@ pygame.init()  # Инициализация Pygame
 # Параметры экрана
 screen = pygame.display.set_mode([800, 600])
 background = pygame.Surface(screen.get_size())
-os.environ['SDL_VIDEO_CENTERED'] = '1'
+os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.display.set_caption("Arkanoid")
 icon = pygame.Surface((10, 10))
 pygame.display.set_icon(icon)
@@ -38,9 +38,9 @@ fps = 90
 developer = "@super_nuke"
 
 # Шрифты
-font = pygame.font.SysFont('Courier', 45, bold=True)
-mediumfont = pygame.font.SysFont('Courier', 36, bold=True)
-smallfont = pygame.font.SysFont('Courier', 35, bold=True)
+font = pygame.font.SysFont("Courier", 45, bold=True)
+mediumfont = pygame.font.SysFont("Courier", 36, bold=True)
+smallfont = pygame.font.SysFont("Courier", 35, bold=True)
 
 # Звуки
 whoosh = pygame.mixer.Sound(os.path.join("audio", "sounds", "introwhoosh.wav"))
@@ -77,7 +77,7 @@ class Ball(pygame.sprite.Sprite):
     speed = 0
     x = 0
     y = 0
-    directions = [60, 120, 240, 300]
+    directions = [120, 140, 160, 180, 200, 220, 240]
     direction = 0
     width = 20
     height = 20
@@ -103,7 +103,7 @@ class Ball(pygame.sprite.Sprite):
         self.direction -= d
         bounce.play()
 
-    def vertical_bounce(self):
+    def vertical_bounce(self):  # Вертикальный отскок мячика
         self.direction = (360 - self.direction) % 360
         bounce.play()
 
@@ -152,8 +152,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
-        self.rect.x = random.randint(0, 725)
-        self.rect.y = self.screenheight - self.height - 2
+        self.rect.x = random.randint(0, 700)
+        self.rect.y = self.screenheight - self.height - 5
         self.movemode = 0
 
     def update(self):  # Движение ракетки
