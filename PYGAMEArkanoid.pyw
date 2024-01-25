@@ -50,12 +50,38 @@ music_themes = [1, 2, 3, 4, 5]
 start = False
 paused = False
 
+fog = pygame.Surface((800, 600))  # Затемняющая поверхность
+fog_alpha = 0
+fog.set_alpha(fog_alpha)
+
+# Надписи а эране, которые нужно отображать и во время игры, и во время паузы
+items_alpha = 0
 if theme == "DARK":
     xtext = smallfont.render("X", True, white)
+    pausetext = smallfont.render("||", True, white)
+    item1 = smallfont.render("resume (Esc)", True, white)
+    item2 = smallfont.render("new game (N)", True, white)
+    item3 = smallfont.render("exit (AltF4)", True, white)
 else:
     xtext = smallfont.render("X", True, black)
+    pausetext = smallfont.render("||", True, black)
+    item1 = smallfont.render("resume (Esc)", True, black)
+    item2 = smallfont.render("new game (N)", True, black)
+    item3 = smallfont.render("exit (AltF4)", True, black)
+pausetext.set_alpha(items_alpha)
+item1.set_alpha(items_alpha)
+item2.set_alpha(items_alpha)
+item3.set_alpha(items_alpha)
 xpos = xtext.get_rect(centerx=775)
 xpos.top = 5
+pausepos = pausetext.get_rect(centerx=25)
+pausepos.top = 5
+item1pos = item1.get_rect(centerx=background.get_width() / 2)
+item1pos.top = 300
+item2pos = item2.get_rect(centerx=background.get_width() / 2)
+item2pos.top = 350
+item3pos = item3.get_rect(centerx=background.get_width() / 2)
+item3pos.top = 400
 
 
 class Block(pygame.sprite.Sprite):
@@ -225,10 +251,18 @@ def pausecheck():  # Огромная функция, отвечающая за 
         playerframe,    \
         framecount,     \
         theme,          \
-        xtext
+        xtext,          \
+        pausetext,      \
+        item1,          \
+        item2,          \
+        item3,          \
+        item1pos,       \
+        item2pos,       \
+        item3pos,       \
+        fog_alpha,      \
+        items_alpha
     while paused:
         pauseclose = False
-        fog = pygame.Surface((800, 600))  # Затемняющая поверхность
         if theme == "DARK":
             xtext = smallfont.render("X", True, white)
             pausetext = smallfont.render("||", True, white)
@@ -241,14 +275,6 @@ def pausecheck():  # Огромная функция, отвечающая за 
             item1 = smallfont.render("resume (Esc)", True, black)
             item2 = smallfont.render("new game (N)", True, black)
             item3 = smallfont.render("exit (AltF4)", True, black)
-        pausepos = pausetext.get_rect(centerx=25)
-        pausepos.top = 5
-        item1pos = item1.get_rect(centerx=background.get_width() / 2)
-        item1pos.top = 300
-        item2pos = item2.get_rect(centerx=background.get_width() / 2)
-        item2pos.top = 350
-        item3pos = item3.get_rect(centerx=background.get_width() / 2)
-        item3pos.top = 400
 
         selected = 0
         while not pauseclose:
@@ -288,7 +314,15 @@ def pausecheck():  # Огромная функция, отвечающая за 
                                                               f"playerframe{playerframe}.png"))
             if speedup:
                 screen.blit(xtext, xpos)
-            fog.set_alpha(200)
+            if 0 <= fog_alpha < 195:
+                fog_alpha += 5
+            fog.set_alpha(fog_alpha)
+            if 0 <= items_alpha < 250:
+                items_alpha += 5
+            pausetext.set_alpha(items_alpha)
+            item1.set_alpha(items_alpha)
+            item2.set_alpha(items_alpha)
+            item3.set_alpha(items_alpha)
             if theme == "DARK":
                 fog.fill(black)
             else:
@@ -870,6 +904,20 @@ while developer == "@super_nuke":
 
         pausecheck()
 
+        if theme == "DARK":
+            fog.fill(black)
+        else:
+            fog.fill(white)
+        if 5 < fog.get_alpha() <= 200:
+            fog_alpha -= 5
+        fog.set_alpha(fog_alpha)
+        if 5 < items_alpha <= 255:
+            items_alpha -= 5
+        pausetext.set_alpha(items_alpha)
+        item1.set_alpha(items_alpha)
+        item2.set_alpha(items_alpha)
+        item3.set_alpha(items_alpha)
+
         if not ball.update():
             player.update()
 
@@ -993,5 +1041,12 @@ while developer == "@super_nuke":
         if speedup:
             screen.blit(xtext, xpos)
         allsprites.draw(screen)
+        if fog_alpha > 0:
+            screen.blit(fog, (0, 0))
+        if items_alpha > 0:
+            screen.blit(pausetext, pausepos)
+            screen.blit(item1, item1pos)
+            screen.blit(item2, item2pos)
+            screen.blit(item3, item3pos)
         pygame.display.flip()
         start = False
