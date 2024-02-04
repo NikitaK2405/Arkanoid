@@ -2,6 +2,7 @@ import math
 import os
 import random
 import sys
+import pickle
 import pygame
 from pygame.locals import *
 
@@ -176,6 +177,33 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x = self.screenwidth - self.width
 
 
+f = open("highscore.dat", "rb")  # Что-то не работает...
+try:
+    players = pickle.load(f)
+except EOFError:
+    players = {"Nikita": [0, 0]}
+f.close()
+if "Nikita" in players.keys():
+    if len(players["Nikita"]) == 2:
+        highscore = players["Nikita"][0]
+        highlevel = players["Nikita"][1]
+    else:
+        highscore = 0
+        highlevel = 0
+        f.close()
+        f = open("highscore.dat", "wb")
+        players = {"Nikita": [0, 0]}
+        pickle.dump(players, f, True)
+else:
+    highscore = 0
+    highlevel = 0
+    f.close()
+    f = open("highscore.dat", "wb")
+    players = {"Nikita": [0, 0]}
+    pickle.dump(players, f, True)
+f.close()
+
+
 player = Player()  # Создание ракетки
 ball = Ball()  # Создание мячика
 startballpos = 180
@@ -190,6 +218,7 @@ allsprites.add(ball)
 
 
 def close_arkanoid():
+    f.close()
     pygame.quit()
     sys.exit()
 
@@ -208,6 +237,40 @@ def load_theme():  # Собственно Плеер.
     music_to_load = os.path.join("audio", "themes", f"Viscid_{music[music_theme]}.mp3")
     pygame.mixer.music.load(music_to_load)
     return music_to_load
+
+
+def f_write_score():  # Что-то не работает...
+    global f, players, score, highscore, level, highlevel
+    f = open("highscore.dat", "rb")
+    try:
+        players = pickle.load(f)
+    except EOFError:
+        players = {"Nikita": [0, 0]}
+    f.close()
+    if "Nikita" in players.keys():
+        if len(players["Nikita"]) == 2:
+            highscore = players["Nikita"][0]
+            highlevel = players["Nikita"][1]
+        else:
+            highscore = 0
+            highlevel = 0
+            f.close()
+            f = open("highscore.dat", "wb")
+            players = {"Nikita": [0, 0]}
+            pickle.dump(players, f, True)
+    else:
+        highscore = 0
+        highlevel = 0
+        f.close()
+        f = open("highscore.dat", "wb")
+        players = {"Nikita": [0, 0]}
+        pickle.dump(players, f, True)
+    f.close()
+    if score > int(highscore):
+        f = open("highscore.dat", "wb")
+        players = {"Nikita": [score, level]}
+        pickle.dump(players, f, True)
+        f.close()
 
 
 def pausecheck():  # Огромная функция, отвечающая за паузу
@@ -229,20 +292,27 @@ def pausecheck():  # Огромная функция, отвечающая за 
     while paused:
         pauseclose = False
         fog = pygame.Surface((800, 600))  # Затемняющая поверхность
+
+        f_write_score()
+
         if theme == "DARK":
             xtext = smallfont.render("X", True, white)
             pausetext = smallfont.render("||", True, white)
+            scoretext = smallfont.render(f"Best score: {highscore}", True, white)
             item1 = smallfont.render("resume (Esc)", True, white)
             item2 = smallfont.render("new game (N)", True, white)
             item3 = smallfont.render("exit (AltF4)", True, white)
         else:
             xtext = smallfont.render("X", True, black)
             pausetext = smallfont.render("||", True, black)
+            scoretext = smallfont.render(f"Best score: {highscore}", True, black)
             item1 = smallfont.render("resume (Esc)", True, black)
             item2 = smallfont.render("new game (N)", True, black)
             item3 = smallfont.render("exit (AltF4)", True, black)
-        pausepos = pausetext.get_rect(centerx=25)
+        pausepos = pausetext.get_rect(left=5)
         pausepos.top = 5
+        scorepos = scoretext.get_rect(left=10)
+        scorepos.top = 560
         item1pos = item1.get_rect(centerx=background.get_width() / 2)
         item1pos.top = 300
         item2pos = item2.get_rect(centerx=background.get_width() / 2)
@@ -255,6 +325,7 @@ def pausecheck():  # Огромная функция, отвечающая за 
             if theme == "DARK":
                 xtext = smallfont.render("X", True, white)
                 pausetext = smallfont.render("||", True, white)
+                scoretext = smallfont.render(f"Best score: {highscore}", True, white)
                 if selected != 1:
                     item1 = smallfont.render("resume (Esc)", True, white)
                 if selected != 2:
@@ -272,6 +343,7 @@ def pausecheck():  # Огромная функция, отвечающая за 
             else:
                 xtext = smallfont.render("X", True, black)
                 pausetext = smallfont.render("||", True, black)
+                scoretext = smallfont.render(f"Best score: {highscore}", True, black)
                 if selected != 1:
                     item1 = smallfont.render("resume (Esc)", True, black)
                 if selected != 2:
@@ -296,6 +368,7 @@ def pausecheck():  # Огромная функция, отвечающая за 
             allsprites.draw(screen)
             screen.blit(fog, (0, 0))
             screen.blit(pausetext, pausepos)
+            screen.blit(scoretext, scorepos)
             screen.blit(item1, item1pos)
             screen.blit(item2, item2pos)
             screen.blit(item3, item3pos)
@@ -794,6 +867,7 @@ while developer == "@super_nuke":
             pygame.display.flip()
 
     if result == "Defeat":
+        f_write_score()
         nrow = 4
         score = 0
         level = 1
