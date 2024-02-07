@@ -37,6 +37,7 @@ pygame.event.set_grab(True)
 clock = pygame.time.Clock()
 fps = 90
 developer = "@super_nuke"
+score = 0
 
 # Шрифты
 font = pygame.font.SysFont("Courier", 45, bold=True)
@@ -50,13 +51,6 @@ music_themes = [1, 2, 3, 4, 5]
 
 start = False
 paused = False
-
-if theme == "DARK":
-    xtext = smallfont.render("X", True, white)
-else:
-    xtext = smallfont.render("X", True, black)
-xpos = xtext.get_rect(centerx=775)
-xpos.top = 5
 
 
 class Block(pygame.sprite.Sprite):
@@ -177,32 +171,42 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x = self.screenwidth - self.width
 
 
-f = open("highscore.dat", "rb")  # Что-то не работает...
+f = open("highscore.dat", "rb")
 try:
     players = pickle.load(f)
 except EOFError:
-    players = {"Nikita": [0, 0]}
+    players = {"Player1": [0, 0]}
 f.close()
-if "Nikita" in players.keys():
-    if len(players["Nikita"]) == 2:
-        highscore = players["Nikita"][0]
-        highlevel = players["Nikita"][1]
+if "Player1" in players.keys():
+    if len(players["Player1"]) == 2:
+        highscore = players["Player1"][0]
+        highlevel = players["Player1"][1]
     else:
         highscore = 0
         highlevel = 0
         f.close()
         f = open("highscore.dat", "wb")
-        players = {"Nikita": [0, 0]}
+        players = {"Player1": [0, 0]}
         pickle.dump(players, f, True)
 else:
     highscore = 0
     highlevel = 0
     f.close()
     f = open("highscore.dat", "wb")
-    players = {"Nikita": [0, 0]}
+    players = {"Player1": [0, 0]}
     pickle.dump(players, f, True)
 f.close()
 
+if theme == "DARK":
+    xtext = smallfont.render("X", True, white)
+    sptext = smallfont.render(f"{score}", True, white)
+else:
+    xtext = smallfont.render("X", True, black)
+    sptext = smallfont.render(f"{score}", True, black)
+xpos = xtext.get_rect(centerx=775)
+xpos.top = 5
+sppos = sptext.get_rect(left=5)
+sppos.top = 5
 
 player = Player()  # Создание ракетки
 ball = Ball()  # Создание мячика
@@ -239,36 +243,36 @@ def load_theme():  # Собственно Плеер.
     return music_to_load
 
 
-def f_write_score():  # Что-то не работает...
+def f_write_score():
     global f, players, score, highscore, level, highlevel
     f = open("highscore.dat", "rb")
     try:
         players = pickle.load(f)
     except EOFError:
-        players = {"Nikita": [0, 0]}
+        players = {"Player1": [0, 0]}
     f.close()
-    if "Nikita" in players.keys():
-        if len(players["Nikita"]) == 2:
-            highscore = players["Nikita"][0]
-            highlevel = players["Nikita"][1]
+    if "Player1" in players.keys():
+        if len(players["Player1"]) == 2:
+            highscore = players["Player1"][0]
+            highlevel = players["Player1"][1]
         else:
             highscore = 0
             highlevel = 0
             f.close()
             f = open("highscore.dat", "wb")
-            players = {"Nikita": [0, 0]}
+            players = {"Player1": [0, 0]}
             pickle.dump(players, f, True)
     else:
         highscore = 0
         highlevel = 0
         f.close()
         f = open("highscore.dat", "wb")
-        players = {"Nikita": [0, 0]}
+        players = {"Player1": [0, 0]}
         pickle.dump(players, f, True)
     f.close()
     if score > int(highscore):
         f = open("highscore.dat", "wb")
-        players = {"Nikita": [score, level]}
+        players = {"Player1": [score, level]}
         pickle.dump(players, f, True)
         f.close()
 
@@ -288,7 +292,8 @@ def pausecheck():  # Огромная функция, отвечающая за 
         playerframe,    \
         framecount,     \
         theme,          \
-        xtext
+        xtext,          \
+        sptext
     while paused:
         pauseclose = False
         fog = pygame.Surface((800, 600))  # Затемняющая поверхность
@@ -297,22 +302,20 @@ def pausecheck():  # Огромная функция, отвечающая за 
 
         if theme == "DARK":
             xtext = smallfont.render("X", True, white)
-            pausetext = smallfont.render("||", True, white)
-            scoretext = smallfont.render(f"Best score: {highscore}", True, white)
+            sptext = smallfont.render("||", True, white)
+            hscoretext = smallfont.render(f"Best score: {highscore}", True, white)
             item1 = smallfont.render("resume (Esc)", True, white)
             item2 = smallfont.render("new game (N)", True, white)
             item3 = smallfont.render("exit (AltF4)", True, white)
         else:
             xtext = smallfont.render("X", True, black)
-            pausetext = smallfont.render("||", True, black)
-            scoretext = smallfont.render(f"Best score: {highscore}", True, black)
+            sptext = smallfont.render("||", True, black)
+            hscoretext = smallfont.render(f"Best score: {highscore}", True, black)
             item1 = smallfont.render("resume (Esc)", True, black)
             item2 = smallfont.render("new game (N)", True, black)
             item3 = smallfont.render("exit (AltF4)", True, black)
-        pausepos = pausetext.get_rect(left=5)
-        pausepos.top = 5
-        scorepos = scoretext.get_rect(left=10)
-        scorepos.top = 560
+        hscorepos = hscoretext.get_rect(left=10)
+        hscorepos.top = 560
         item1pos = item1.get_rect(centerx=background.get_width() / 2)
         item1pos.top = 300
         item2pos = item2.get_rect(centerx=background.get_width() / 2)
@@ -324,8 +327,8 @@ def pausecheck():  # Огромная функция, отвечающая за 
         while not pauseclose:
             if theme == "DARK":
                 xtext = smallfont.render("X", True, white)
-                pausetext = smallfont.render("||", True, white)
-                scoretext = smallfont.render(f"Best score: {highscore}", True, white)
+                sptext = smallfont.render("||", True, white)
+                hscoretext = smallfont.render(f"Best score: {highscore}", True, white)
                 if selected != 1:
                     item1 = smallfont.render("resume (Esc)", True, white)
                 if selected != 2:
@@ -342,8 +345,8 @@ def pausecheck():  # Огромная функция, отвечающая за 
                                                               f"playerframe{playerframe}.png"))
             else:
                 xtext = smallfont.render("X", True, black)
-                pausetext = smallfont.render("||", True, black)
-                scoretext = smallfont.render(f"Best score: {highscore}", True, black)
+                sptext = smallfont.render("||", True, black)
+                hscoretext = smallfont.render(f"Best score: {highscore}", True, black)
                 if selected != 1:
                     item1 = smallfont.render("resume (Esc)", True, black)
                 if selected != 2:
@@ -367,8 +370,8 @@ def pausecheck():  # Огромная функция, отвечающая за 
                 fog.fill(white)
             allsprites.draw(screen)
             screen.blit(fog, (0, 0))
-            screen.blit(pausetext, pausepos)
-            screen.blit(scoretext, scorepos)
+            screen.blit(sptext, sppos)
+            screen.blit(hscoretext, hscorepos)
             screen.blit(item1, item1pos)
             screen.blit(item2, item2pos)
             screen.blit(item3, item3pos)
@@ -697,7 +700,7 @@ while developer == "@super_nuke":
             if player.rect.y < 580:
                 player.rect.y += 1
             for b in blocks:
-                b.rect.y += random.randint(2, 4)
+                b.rect.y += random.randint(2, 3)
 
             clock.tick(fps)
             if theme == "DARK":
@@ -811,7 +814,7 @@ while developer == "@super_nuke":
                 player.rect.y += 1
             for b in blocks:
                 if b.rect.y <= screen.get_height():
-                    b.rect.y += random.randint(2, 4)
+                    b.rect.y += random.randint(2, 3)
 
             clock.tick(fps)
             if theme == "DARK":
@@ -883,20 +886,20 @@ while developer == "@super_nuke":
                "11111111111111111111111111111111",
                "11111111111111111111111111111111",
                "11111111111111111111111111111111"],
-    
+
               ["00101010101010101010101010101010",  # 2nd level
                "01010101010101010101010101010100",
                "00101010101010101010101010101010",
                "01010101010101010101010101010100",
                "00101010101010101010101010101010"],
-    
+
               ["11111111111111111111111111111111",  # 3rd level
                "10000000000000000000000000000001",
                "10111111111111111111111111111101",
                "10111111111111111111111111111101",
                "10000000000000000000000000000001",
                "11111111111111111111111111111111"],
-    
+
               ["11111111111111110011001100110011",  # 4th level
                "11111111111111110011001100110011",
                "11001100110011000011001100110011",
@@ -904,7 +907,7 @@ while developer == "@super_nuke":
                "11001100110011000011001100110011",
                "11001100110011001111111111111111",
                "11001100110011001111111111111111"],
-    
+
               ["11001100110011001100110011001100",  # 5th level
                "11001100110011001100110011001100",
                "00110011001100110011001100110011",
@@ -913,7 +916,7 @@ while developer == "@super_nuke":
                "11001100110011001100110011001100",
                "00110011001100110011001100110011",
                "00110011001100110011001100110011"],
-              
+
               ["00001000001000001000001000001000",  # 6th level
                "10000010000010000010000010000010",
                "00100000100000100000100000100000",
@@ -923,7 +926,7 @@ while developer == "@super_nuke":
                "00001000001000001000001000001000",
                "00100000100000100000100000100000",
                "10000010000010000010000010000010"],
-              
+
               ["01001001011010010110100101100010",  # 7th level
                "00101011101001010010010101001010",
                "11110010111001010101010110101010",
@@ -934,7 +937,7 @@ while developer == "@super_nuke":
                "01011101001001011001100011101010",
                "00000011111011010100010111100111",
                "01010101010000000111111111011011"],
-              
+
               ["01111111111111111111111111111110",  # 8th level
                "10000000000000000000000000000001",
                "10011111111111111111111111111001",
@@ -944,6 +947,7 @@ while developer == "@super_nuke":
                "10011111111111111111111111111001",
                "10000000000000000000000000000001",
                "01111111111111111111111111111110"]]
+
     if level <= 8:
         for row in range(len(levels[level-1])):  # Отрисовка блоков
             for column in range(ncolumn):
@@ -970,9 +974,11 @@ while developer == "@super_nuke":
         if theme == "DARK":
             screen.fill(black)
             xtext = smallfont.render("X", True, white)
+            sptext = smallfont.render(f"{score}", True, white)
         else:
             screen.fill(white)
             xtext = smallfont.render("X", True, black)
+            sptext = smallfont.render(f"{score}", True, black)
 
         if pygame.mixer.music.get_endevent():
             pygame.mixer.music.queue(load_theme())
@@ -1139,6 +1145,7 @@ while developer == "@super_nuke":
 
         if speedup:
             screen.blit(xtext, xpos)
+        screen.blit(sptext, sppos)
         allsprites.draw(screen)
         pygame.display.flip()
         start = False
