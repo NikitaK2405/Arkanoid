@@ -306,23 +306,26 @@ def pausecheck():  # Огромная функция, отвечающая за 
             hscoretext = smallfont.render(f"Best score: {highscore}", True, white)
             item1 = smallfont.render("resume (Esc)", True, white)
             item2 = smallfont.render("new game (N)", True, white)
-            item3 = smallfont.render("exit (AltF4)", True, white)
+            item3 = smallfont.render("settings (S)", True, white)
+            item4 = smallfont.render("exit (AltF4)", True, white)
         else:
             xtext = smallfont.render("X", True, black)
             sptext = smallfont.render("||", True, black)
             hscoretext = smallfont.render(f"Best score: {highscore}", True, black)
             item1 = smallfont.render("resume (Esc)", True, black)
             item2 = smallfont.render("new game (N)", True, black)
-            item3 = smallfont.render("exit (AltF4)", True, black)
+            item3 = smallfont.render("settings (S)", True, black)
+            item4 = smallfont.render("exit (AltF4)", True, black)
         hscorepos = hscoretext.get_rect(left=10)
         hscorepos.top = 560
         item1pos = item1.get_rect(centerx=background.get_width() / 2)
-        item1pos.top = 300
+        item1pos.top = 310
         item2pos = item2.get_rect(centerx=background.get_width() / 2)
         item2pos.top = 350
         item3pos = item3.get_rect(centerx=background.get_width() / 2)
-        item3pos.top = 400
-
+        item3pos.top = 390
+        item4pos = item4.get_rect(centerx=background.get_width() / 2)
+        item4pos.top = 430
         selected = 0
         while not pauseclose:
             if theme == "DARK":
@@ -334,7 +337,9 @@ def pausecheck():  # Огромная функция, отвечающая за 
                 if selected != 2:
                     item2 = smallfont.render("new game (N)", True, white)
                 if selected != 3:
-                    item3 = smallfont.render("exit (AltF4)", True, white)
+                    item3 = smallfont.render("settings (S)", True, white)
+                if selected != 4:
+                    item4 = smallfont.render("exit (AltF4)", True, white)
                 ball.image = pygame.image.load(os.path.join("images",
                                                             "ball",
                                                             "dark_theme",
@@ -352,7 +357,9 @@ def pausecheck():  # Огромная функция, отвечающая за 
                 if selected != 2:
                     item2 = smallfont.render("new game (N)", True, black)
                 if selected != 3:
-                    item3 = smallfont.render("exit (AltF4)", True, black)
+                    item3 = smallfont.render("settings (S)", True, black)
+                if selected != 4:
+                    item4 = smallfont.render("exit (AltF4)", True, black)
                 ball.image = pygame.image.load(os.path.join("images",
                                                             "ball",
                                                             "light_theme",
@@ -375,6 +382,7 @@ def pausecheck():  # Огромная функция, отвечающая за 
             screen.blit(item1, item1pos)
             screen.blit(item2, item2pos)
             screen.blit(item3, item3pos)
+            screen.blit(item4, item4pos)
 
             for event in pygame.event.get():  # Проверка событий
                 if event.type == QUIT:
@@ -419,23 +427,29 @@ def pausecheck():  # Огромная функция, отвечающая за 
                         allsprites.add(ball)
                         allsprites.add(player)
                         blocks = pygame.sprite.Group()
+                    if event.key == K_s:
+                        pass
                 if event.type == pygame.MOUSEMOTION:
                     if item1pos.left <= get_mouse_x() <= item1pos.right and \
                             item1pos.top <= get_mouse_y() <= item1pos.bottom:
                         if theme == "DARK":
                             item1 = mediumfont.render("resume (Esc)", True, grey)
                             item2 = smallfont.render("new game (N)", True, white)
-                            item3 = smallfont.render("exit (AltF4)", True, white)
+                            item3 = smallfont.render("settings (S)", True, white)
+                            item4 = smallfont.render("exit (AltF4)", True, white)
                         else:
                             item1 = mediumfont.render("resume (Esc)", True, grey)
                             item2 = smallfont.render("new game (N)", True, black)
-                            item3 = smallfont.render("exit (AltF4)", True, black)
+                            item3 = smallfont.render("settings (S)", True, black)
+                            item4 = smallfont.render("exit (AltF4)", True, black)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
-                        item1pos.top = 300
+                        item1pos.top = 310
                         item2pos = item2.get_rect(centerx=background.get_width() / 2)
                         item2pos.top = 350
                         item3pos = item3.get_rect(centerx=background.get_width() / 2)
-                        item3pos.top = 400
+                        item3pos.top = 390
+                        item4pos = item4.get_rect(centerx=background.get_width() / 2)
+                        item4pos.top = 430
                         selected = 1
 
                     elif item2pos.left <= get_mouse_x() <= item2pos.right and \
@@ -443,17 +457,21 @@ def pausecheck():  # Огромная функция, отвечающая за 
                         if theme == "DARK":
                             item1 = smallfont.render("resume (Esc)", True, white)
                             item2 = mediumfont.render("new game (N)", True, grey)
-                            item3 = smallfont.render("exit (AltF4)", True, white)
+                            item3 = smallfont.render("settings (S)", True, white)
+                            item4 = smallfont.render("exit (AltF4)", True, white)
                         else:
                             item1 = smallfont.render("resume (Esc)", True, black)
                             item2 = mediumfont.render("new game (N)", True, grey)
-                            item3 = smallfont.render("exit (AltF4)", True, black)
+                            item3 = smallfont.render("settings (S)", True, white)
+                            item4 = smallfont.render("exit (AltF4)", True, black)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
-                        item1pos.top = 300
+                        item1pos.top = 310
                         item2pos = item2.get_rect(centerx=background.get_width() / 2)
                         item2pos.top = 350
                         item3pos = item3.get_rect(centerx=background.get_width() / 2)
-                        item3pos.top = 400
+                        item3pos.top = 390
+                        item4pos = item4.get_rect(centerx=background.get_width() / 2)
+                        item4pos.top = 430
                         selected = 2
 
                     elif item3pos.left <= get_mouse_x() <= item3pos.right and \
@@ -461,34 +479,64 @@ def pausecheck():  # Огромная функция, отвечающая за 
                         if theme == "DARK":
                             item1 = smallfont.render("resume (Esc)", True, white)
                             item2 = smallfont.render("new game (N)", True, white)
-                            item3 = mediumfont.render("exit (AltF4)", True, grey)
+                            item3 = mediumfont.render("settings (S)", True, grey)
+                            item4 = smallfont.render("exit (AltF4)", True, white)
                         else:
                             item1 = smallfont.render("resume (Esc)", True, black)
                             item2 = smallfont.render("new game (N)", True, black)
-                            item3 = mediumfont.render("exit (AltF4)", True, grey)
+                            item3 = mediumfont.render("settings (S)", True, grey)
+                            item4 = smallfont.render("exit (AltF4)", True, black)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
-                        item1pos.top = 300
+                        item1pos.top = 310
                         item2pos = item2.get_rect(centerx=background.get_width() / 2)
                         item2pos.top = 350
                         item3pos = item3.get_rect(centerx=background.get_width() / 2)
-                        item3pos.top = 400
+                        item3pos.top = 390
+                        item4pos = item4.get_rect(centerx=background.get_width() / 2)
+                        item4pos.top = 430
                         selected = 3
+
+                    elif item4pos.left <= get_mouse_x() <= item4pos.right and \
+                            item4pos.top <= get_mouse_y() <= item4pos.bottom:
+                        if theme == "DARK":
+                            item1 = smallfont.render("resume (Esc)", True, white)
+                            item2 = smallfont.render("new game (N)", True, white)
+                            item3 = smallfont.render("settings (S)", True, white)
+                            item4 = mediumfont.render("exit (AltF4)", True, grey)
+                        else:
+                            item1 = smallfont.render("resume (Esc)", True, black)
+                            item2 = smallfont.render("new game (N)", True, black)
+                            item3 = smallfont.render("settings (S)", True, black)
+                            item4 = mediumfont.render("exit (AltF4)", True, grey)
+                        item1pos = item1.get_rect(centerx=background.get_width() / 2)
+                        item1pos.top = 310
+                        item2pos = item2.get_rect(centerx=background.get_width() / 2)
+                        item2pos.top = 350
+                        item3pos = item3.get_rect(centerx=background.get_width() / 2)
+                        item3pos.top = 390
+                        item4pos = item4.get_rect(centerx=background.get_width() / 2)
+                        item4pos.top = 430
+                        selected = 4
 
                     else:
                         if theme == "DARK":
                             item1 = smallfont.render("resume (Esc)", True, white)
                             item2 = smallfont.render("new game (N)", True, white)
-                            item3 = smallfont.render("exit (AltF4)", True, white)
+                            item3 = smallfont.render("settings (S)", True, white)
+                            item4 = smallfont.render("exit (AltF4)", True, white)
                         else:
                             item1 = smallfont.render("resume (Esc)", True, black)
                             item2 = smallfont.render("new game (N)", True, black)
-                            item3 = smallfont.render("exit (AltF4)", True, black)
+                            item3 = smallfont.render("settings (S)", True, black)
+                            item4 = smallfont.render("exit (AltF4)", True, black)
                         item1pos = item1.get_rect(centerx=background.get_width() / 2)
-                        item1pos.top = 300
+                        item1pos.top = 310
                         item2pos = item2.get_rect(centerx=background.get_width() / 2)
                         item2pos.top = 350
                         item3pos = item3.get_rect(centerx=background.get_width() / 2)
-                        item3pos.top = 400
+                        item3pos.top = 390
+                        item4pos = item4.get_rect(centerx=background.get_width() / 2)
+                        item4pos.top = 430
                         selected = 0
 
                 if selected == 1:  # Продолжение игры
@@ -530,10 +578,16 @@ def pausecheck():  # Огромная функция, отвечающая за 
                             allsprites.add(player)
                             blocks = pygame.sprite.Group()
 
-                elif selected == 3:  # Выход из игры
+                elif selected == 3:  # Настройки
                     if event.type == MOUSEBUTTONUP:
                         if item3pos.left <= get_mouse_x() <= item3pos.right and \
                                 item3pos.top <= get_mouse_y() <= item3pos.bottom:
+                            pass
+
+                elif selected == 4:  # Выход из игры
+                    if event.type == MOUSEBUTTONUP:
+                        if item4pos.left <= get_mouse_x() <= item4pos.right and \
+                                item4pos.top <= get_mouse_y() <= item4pos.bottom:
                             close_arkanoid()
 
             pygame.display.flip()
