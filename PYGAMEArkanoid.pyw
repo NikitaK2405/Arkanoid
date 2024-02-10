@@ -38,6 +38,7 @@ clock = pygame.time.Clock()
 fps = 90
 developer = "@super_nuke"
 score = 0
+volume = 100
 
 # Шрифты
 font = pygame.font.SysFont("Courier", 45, bold=True)
@@ -51,6 +52,7 @@ music_themes = [1, 2, 3, 4, 5]
 
 start = False
 paused = False
+settingsopened = False
 
 
 class Block(pygame.sprite.Sprite):
@@ -205,20 +207,29 @@ item1 = smallfont.render("resume (Esc)", True, white)
 item2 = smallfont.render("new game (N)", True, white)
 item3 = smallfont.render("settings (S)", True, white)
 item4 = smallfont.render("exit (AltF4)", True, white)
+item5 = smallfont.render("-", True, white)
+item6 = smallfont.render("+", True, white)
+item7 = smallfont.render(f"{volume}", True, white)
 xpos = xtext.get_rect(centerx=775)
 xpos.top = 5
 sppos = sptext.get_rect(left=5)
 sppos.top = 5
 hscorepos = hscoretext.get_rect(left=10)
 hscorepos.top = 560
-item1pos = item1.get_rect(centerx=background.get_width() / 2)
+item1pos = item1.get_rect(centerx=400)
 item1pos.top = 310
-item2pos = item2.get_rect(centerx=background.get_width() / 2)
+item2pos = item2.get_rect(centerx=400)
 item2pos.top = 350
-item3pos = item3.get_rect(centerx=background.get_width() / 2)
+item3pos = item3.get_rect(centerx=400)
 item3pos.top = 390
-item4pos = item4.get_rect(centerx=background.get_width() / 2)
+item4pos = item4.get_rect(centerx=400)
 item4pos.top = 430
+item5pos = item5.get_rect(centerx=431)
+item5pos.top = 350
+item6pos = item6.get_rect(centerx=515)
+item6pos.top = 350
+item7pos = item7.get_rect(centerx=473)
+item7pos.top = 350
 
 player = Player()  # Создание ракетки
 ball = Ball()  # Создание мячика
@@ -289,35 +300,64 @@ def f_write_score():
         f.close()
 
 
-def clear_items():
-    global item1, item2, item3, item4
+def clear_items(s=0):
+    global item1, item2, item3, item4, item5, item6, item7
     if theme == "DARK":
-        item1 = smallfont.render("resume (Esc)", True, white)
-        item2 = smallfont.render("new game (N)", True, white)
-        item3 = smallfont.render("settings (S)", True, white)
-        item4 = smallfont.render("exit (AltF4)", True, white)
+        if s == 0:
+            item1 = smallfont.render("resume (Esc)", True, white)
+            item2 = smallfont.render("new game (N)", True, white)
+            item3 = smallfont.render("settings (S)", True, white)
+            item4 = smallfont.render("exit (AltF4)", True, white)
+        elif s == 1:
+            item1 = smallfont.render("< back (Esc)", True, white)
+            item2 = smallfont.render("volume", True, white)
+            item3 = smallfont.render("reset (AltR)", True, white)
+            item4 = smallfont.render("players (F5)", True, white)
+            item5 = smallfont.render("-", True, white)
+            item6 = smallfont.render("+", True, white)
+            item7 = smallfont.render(f"{volume}", True, white)
     else:
-        item1 = smallfont.render("resume (Esc)", True, black)
-        item2 = smallfont.render("new game (N)", True, black)
-        item3 = smallfont.render("settings (S)", True, black)
-        item4 = smallfont.render("exit (AltF4)", True, black)
+        if s == 0:
+            item1 = smallfont.render("resume (Esc)", True, black)
+            item2 = smallfont.render("new game (N)", True, black)
+            item3 = smallfont.render("settings (S)", True, black)
+            item4 = smallfont.render("exit (AltF4)", True, black)
+        elif s == 1:
+            item1 = smallfont.render("< back (Esc)", True, black)
+            item2 = smallfont.render("volume", True, black)
+            item3 = smallfont.render("reset (AltR)", True, black)
+            item4 = smallfont.render("players (F5)", True, black)
+            item5 = smallfont.render("-", True, black)
+            item6 = smallfont.render("+", True, black)
+            item7 = smallfont.render(f"{volume}", True, black)
 
 
-def center_items():
-    global item1pos, item2pos, item3pos, item4pos
-    item1pos = item1.get_rect(centerx=background.get_width() / 2)
+def center_items(s=0):
+    global item1pos, item2pos, item3pos, item4pos, item5pos, item6pos, item7pos
+    item1pos = item1.get_rect(centerx=400)
     item1pos.top = 310
-    item2pos = item2.get_rect(centerx=background.get_width() / 2)
-    item2pos.top = 350
-    item3pos = item3.get_rect(centerx=background.get_width() / 2)
+    item3pos = item3.get_rect(centerx=400)
     item3pos.top = 390
-    item4pos = item4.get_rect(centerx=background.get_width() / 2)
+    item4pos = item4.get_rect(centerx=400)
     item4pos.top = 430
+    if s == 0:
+        item2pos = item2.get_rect(centerx=400)
+        item2pos.top = 350
+    if s == 1:
+        item2pos = item2.get_rect(centerx=337)
+        item2pos.top = 350
+        item5pos = item5.get_rect(centerx=431)
+        item5pos.top = 350
+        item6pos = item6.get_rect(centerx=515)
+        item6pos.top = 350
+        item7pos = item7.get_rect(centerx=473)
+        item7pos.top = 350
 
 
-def pausecheck():  # Большая функция, отвечающая за паузу
+def pause():  # Большая функция, отвечающая за паузу
     global event,       \
         paused,         \
+        settingsopened, \
         game_over,      \
         result,         \
         nextlevel,      \
@@ -326,9 +366,6 @@ def pausecheck():  # Большая функция, отвечающая за п
         blocks,         \
         nrow,           \
         level,          \
-        ballframe,      \
-        playerframe,    \
-        framecount,     \
         theme,          \
         xtext,          \
         sptext,         \
@@ -336,11 +373,7 @@ def pausecheck():  # Большая функция, отвечающая за п
         item1,          \
         item2,          \
         item3,          \
-        item4,          \
-        item1pos,       \
-        item2pos,       \
-        item3pos,       \
-        item4pos
+        item4
     while paused:
         if theme == "DARK":
             xtext = smallfont.render("X", True, white)
@@ -397,7 +430,7 @@ def pausecheck():  # Большая функция, отвечающая за п
                 if event.key == K_ESCAPE:
                     pygame.mouse.set_visible(False)
                     pygame.event.set_grab(True)
-                    pygame.mixer.music.set_volume(volume)
+                    pygame.mixer.music.unpause()
                     if pygame.mixer.music.get_endevent():
                         pygame.mixer.music.queue(load_theme())
                     paused = False
@@ -408,7 +441,6 @@ def pausecheck():  # Большая функция, отвечающая за п
                         screen.fill(white)
                     pygame.mouse.set_visible(False)
                     pygame.event.set_grab(True)
-                    pygame.mixer.music.set_volume(volume)
                     pygame.mixer.music.stop()
                     pygame.mixer.music.queue(load_theme())
                     paused = False
@@ -424,7 +456,7 @@ def pausecheck():  # Большая функция, отвечающая за п
                     allsprites.add(player)
                     blocks = pygame.sprite.Group()
                 if event.key == K_s:
-                    pass
+                    settingsopened = True
 
             if item1pos.left <= get_mouse_x() <= item1pos.right and \
                     item1pos.top <= get_mouse_y() <= item1pos.bottom:
@@ -435,7 +467,7 @@ def pausecheck():  # Большая функция, отвечающая за п
                     if event.button == 1:
                         pygame.mouse.set_visible(False)
                         pygame.event.set_grab(True)
-                        pygame.mixer.music.set_volume(volume)
+                        pygame.mixer.music.unpause()
                         if pygame.mixer.music.get_endevent():
                             pygame.mixer.music.queue(load_theme())
                         paused = False
@@ -453,7 +485,6 @@ def pausecheck():  # Большая функция, отвечающая за п
                             screen.fill(white)
                         pygame.mouse.set_visible(False)
                         pygame.event.set_grab(True)
-                        pygame.mixer.music.set_volume(volume)
                         pygame.mixer.music.stop()
                         pygame.mixer.music.queue(load_theme())
                         paused = False
@@ -476,7 +507,7 @@ def pausecheck():  # Большая функция, отвечающая за п
                 center_items()
                 if event.type == MOUSEBUTTONUP:
                     if event.button == 1:
-                        pass
+                        settingsopened = True
 
             elif item4pos.left <= get_mouse_x() <= item4pos.right and \
                     item4pos.top <= get_mouse_y() <= item4pos.bottom:
@@ -491,8 +522,142 @@ def pausecheck():  # Большая функция, отвечающая за п
                 clear_items()
                 center_items()
 
+        if settingsopened:
+            settings()
+
         pygame.display.flip()
         clock.tick(fps)
+
+
+def settings():  # Большая функция, отвечающая за настройки
+    global event,       \
+        settingsopened, \
+        theme,          \
+        volume,         \
+        xtext,          \
+        sptext,         \
+        hscoretext,     \
+        item1,          \
+        item2,          \
+        item3,          \
+        item4,          \
+        item5,          \
+        item6
+
+    while settingsopened:
+        if speedup:
+            screen.blit(xtext, xpos)
+        fog.set_alpha(200)
+        if theme == "DARK":
+            fog.fill(black)
+        else:
+            fog.fill(white)
+        allsprites.draw(screen)
+        screen.blit(fog, (0, 0))
+        screen.blit(sptext, sppos)
+        screen.blit(item1, item1pos)
+        screen.blit(item2, item2pos)
+        screen.blit(item3, item3pos)
+        screen.blit(item4, item4pos)
+        screen.blit(item5, item5pos)
+        screen.blit(item6, item6pos)
+        screen.blit(item7, item7pos)
+        for event in pygame.event.get():  # Проверка событий
+            if event.type == QUIT:
+                close_arkanoid()
+            if event.type == KEYDOWN:
+                if event.mod == KMOD_ALT:
+                    if event.key == K_F4:
+                        close_arkanoid()
+                    if event.key == K_r:
+                        reset()
+                if event.key == K_t:
+                    if theme == "LIGHT":
+                        theme = "DARK"
+                    else:
+                        theme = "LIGHT"
+                if event.key == K_ESCAPE:
+                    settingsopened = False
+                    clear_items()
+                    center_items()
+                if event.key == K_s:
+                    settingsopened = False
+                    clear_items()
+                    center_items()
+                if event.key == K_MINUS or event.key == K_KP_MINUS:
+                    if volume > 0:
+                        volume -= 5
+                        pygame.mixer.music.set_volume(volume / 100)
+                if event.key == K_EQUALS or event.key == K_KP_PLUS:
+                    if volume < 100:
+                        volume += 5
+
+                if event.key == K_F5:
+                    displayers()
+        if item1pos.left <= get_mouse_x() <= item1pos.right and \
+                item1pos.top <= get_mouse_y() <= item1pos.bottom:
+            clear_items(1)
+            item1 = mediumfont.render("< back (Esc)", True, grey)
+            center_items(1)
+            if event.type == MOUSEBUTTONUP:
+                if event.button == 1:
+                    settingsopened = False
+                    clear_items()
+                    center_items()
+        elif item3pos.left <= get_mouse_x() <= item3pos.right and \
+                item3pos.top <= get_mouse_y() <= item3pos.bottom:
+            clear_items(1)
+            item3 = mediumfont.render("reset (AltR)", True, grey)
+            center_items(1)
+            if event.type == MOUSEBUTTONUP:
+                if event.button == 1:
+                    reset()
+        elif item4pos.left <= get_mouse_x() <= item4pos.right and \
+                item4pos.top <= get_mouse_y() <= item4pos.bottom:
+            clear_items(1)
+            item4 = mediumfont.render("players (F5)", True, grey)
+            center_items(1)
+            if event.type == MOUSEBUTTONUP:
+                if event.button == 1:
+                    displayers()
+        elif item5pos.left <= get_mouse_x() <= item5pos.right and \
+                item5pos.top <= get_mouse_y() <= item5pos.bottom:
+            clear_items(1)
+            if volume > 0:
+                item5 = smallfont.render("-", True, grey)
+            center_items(1)
+            if event.type == MOUSEBUTTONUP:
+                if event.button == 1:
+                    if volume > 0:
+                        volume -= 5
+                        event.button = 0
+                        pygame.mixer.music.set_volume(volume / 100)
+        elif item6pos.left <= get_mouse_x() <= item6pos.right and \
+                item6pos.top <= get_mouse_y() <= item6pos.bottom:
+            clear_items(1)
+            if volume < 100:
+                item6 = smallfont.render("+", True, grey)
+            center_items(1)
+            if event.type == MOUSEBUTTONUP:
+                if event.button == 1:
+                    if volume < 100:
+                        volume += 5
+                    event.button = 0
+                    pygame.mixer.music.set_volume(volume / 100)
+        else:
+            clear_items(1)
+            center_items(1)
+
+        pygame.display.flip()
+        clock.tick(fps)
+
+
+def displayers():  # Список игроков
+    pass
+
+
+def reset():  # Сбросить прогресс
+    pass
 
 
 def intro():  # Приветственный экран в начале игры
@@ -588,7 +753,6 @@ result = None
 shift = False
 
 currentspeed = ball.speed
-volume = pygame.mixer.music.get_volume()
 
 while developer == "@super_nuke":
     game_over = False
@@ -953,7 +1117,7 @@ while developer == "@super_nuke":
                 if event.key == K_ESCAPE:
                     pygame.mouse.set_visible(True)
                     pygame.event.set_grab(False)
-                    pygame.mixer.music.set_volume(0)
+                    pygame.mixer.music.pause()
                     paused = True
                 if event.key == K_x:
                     speedup = not speedup
@@ -976,7 +1140,8 @@ while developer == "@super_nuke":
                     pygame.mouse.set_pos(player.rect.x, player.rect.y)
                 movemode = 0
 
-        pausecheck()
+        if paused:
+            pause()
 
         if not ball.update():
             player.update()
