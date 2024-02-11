@@ -306,8 +306,8 @@ def clear_items():
         if settingsopened:
             item1 = smallfont.render("< back (Esc)", True, white)
             item2 = smallfont.render("volume", True, white)
-            item3 = smallfont.render("reset (AltR)", True, white)
-            item4 = smallfont.render("players (F5)", True, white)
+            item3 = smallfont.render("players (F5)", True, white)
+            item4 = smallfont.render("more (Space)", True, white)
             item5 = smallfont.render("-", True, white)
             item6 = smallfont.render("+", True, white)
             item7 = smallfont.render(f"{volume}", True, white)
@@ -319,8 +319,8 @@ def clear_items():
         if settingsopened:
             item1 = smallfont.render("< back (Esc)", True, black)
             item2 = smallfont.render("volume", True, black)
-            item3 = smallfont.render("reset (AltR)", True, black)
-            item4 = smallfont.render("players (F5)", True, black)
+            item3 = smallfont.render("players (F5)", True, black)
+            item4 = smallfont.render("more (Space)", True, black)
             item5 = smallfont.render("-", True, black)
             item6 = smallfont.render("+", True, black)
             item7 = smallfont.render(f"{volume}", True, black)
@@ -534,8 +534,24 @@ def settings():  # Большая функция, отвечающая за на
         fog.set_alpha(200)
         if theme == "DARK":
             fog.fill(black)
+            ball.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "dark_theme",
+                                                        f"ballframe{ballframe}.png"))
+            player.image = pygame.image.load(os.path.join("images",
+                                                          "player",
+                                                          "dark_theme",
+                                                          f"playerframe{playerframe}.png"))
         else:
             fog.fill(white)
+            ball.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "light_theme",
+                                                        f"ballframe{ballframe}.png"))
+            player.image = pygame.image.load(os.path.join("images",
+                                                          "player",
+                                                          "light_theme",
+                                                          f"playerframe{playerframe}.png"))
         allsprites.draw(screen)
         screen.blit(fog, (0, 0))
         screen.blit(sptext, sppos)
@@ -553,8 +569,8 @@ def settings():  # Большая функция, отвечающая за на
                 if event.mod == KMOD_ALT:
                     if event.key == K_F4:
                         close_arkanoid()
-                    if event.key == K_r:
-                        reset()
+                if event.key == K_SPACE:
+                    more()
                 if event.key == K_t:
                     if theme == "LIGHT":
                         theme = "DARK"
@@ -590,19 +606,19 @@ def settings():  # Большая функция, отвечающая за на
         elif item3pos.left <= get_mouse_x() <= item3pos.right and \
                 item3pos.top <= get_mouse_y() <= item3pos.bottom:
             clear_items()
-            item3 = mediumfont.render("reset (AltR)", True, grey)
-            center_items()
-            if event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    reset()
-        elif item4pos.left <= get_mouse_x() <= item4pos.right and \
-                item4pos.top <= get_mouse_y() <= item4pos.bottom:
-            clear_items()
-            item4 = mediumfont.render("players (F5)", True, grey)
+            item3 = mediumfont.render("players (F5)", True, grey)
             center_items()
             if event.type == MOUSEBUTTONUP:
                 if event.button == 1:
                     displayers()
+        elif item4pos.left <= get_mouse_x() <= item4pos.right and \
+                item4pos.top <= get_mouse_y() <= item4pos.bottom:
+            clear_items()
+            item4 = mediumfont.render("more (Space)", True, grey)
+            center_items()
+            if event.type == MOUSEBUTTONUP:
+                if event.button == 1:
+                    more()
         elif item5pos.left <= get_mouse_x() <= item5pos.right and \
                 item5pos.top <= get_mouse_y() <= item5pos.bottom:
             clear_items()
@@ -637,7 +653,7 @@ def displayers():  # Список игроков
     pass
 
 
-def reset():  # Сбросить прогресс
+def more():  # Дополнительные настройки
     pass
 
 
