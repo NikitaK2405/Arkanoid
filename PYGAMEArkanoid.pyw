@@ -6,7 +6,6 @@ import pickle
 import pygame
 from pygame.locals import *
 
-theme = "DARK"
 # Цвета
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -14,6 +13,7 @@ grey = (128, 128, 128)
 red = (225, 0, 0)
 green = (0, 255, 0)
 colors = ["red", "orange", "yellow", "green", "lightblue", "blue", "purple"]  # Цвета блоков
+theme = "DARK"
 
 # Размеры блоков
 block_width = 23
@@ -29,7 +29,12 @@ pygame.init()  # Инициализация Pygame
 screen = pygame.display.set_mode([800, 600])
 background = pygame.Surface(screen.get_size())
 os.environ["SDL_VIDEO_CENTERED"] = "1"
-pygame.display.set_caption("Arkanoid")
+hints = ["even more ways to move the paddle", "try harder", "watch out", "press AltF4", "time to think",
+         "do you have a strategy?", "chill out", "hurry up!", "press W", "press A", "press S", "press D",
+         "press F", "press Esc", "don't press T", "press X", "blocks are falling", "listen to the music",
+         "RAINBOW!", "don't play too much", "WASD, arrows and mouse", "no bugs at all", "what is your favourite song?",
+         "...", "Arkanoid", "inspired by Taito", "1986", "what is your best score?"]
+pygame.display.set_caption(f"Arkanoid: {random.choice(hints)}")
 icon = pygame.Surface((10, 10))
 pygame.display.set_icon(icon)
 pygame.mouse.set_visible(False)
@@ -200,6 +205,7 @@ else:
 f.close()
 
 fog = pygame.Surface((800, 600))  # Затемняющая поверхность
+
 xtext = smallfont.render("X", True, white)
 sptext = smallfont.render(f"{score}", True, white)
 hscoretext = smallfont.render(f"Best score: {highscore}", True, white)
@@ -210,26 +216,16 @@ item4 = smallfont.render("exit (AltF4)", True, white)
 item5 = smallfont.render("-", True, white)
 item6 = smallfont.render("+", True, white)
 item7 = smallfont.render(f"{volume}", True, white)
-xpos = xtext.get_rect(centerx=775)
-xpos.top = 5
-sppos = sptext.get_rect(left=5)
-sppos.top = 5
-hscorepos = hscoretext.get_rect(left=10)
-hscorepos.top = 560
-item1pos = item1.get_rect(centerx=400)
-item1pos.top = 310
-item2pos = item2.get_rect(centerx=400)
-item2pos.top = 350
-item3pos = item3.get_rect(centerx=400)
-item3pos.top = 390
-item4pos = item4.get_rect(centerx=400)
-item4pos.top = 430
-item5pos = item5.get_rect(centerx=431)
-item5pos.top = 350
-item6pos = item6.get_rect(centerx=515)
-item6pos.top = 350
-item7pos = item7.get_rect(centerx=473)
-item7pos.top = 350
+xpos = xtext.get_rect(centerx=775, top=5)
+sppos = sptext.get_rect(left=5, top=5)
+hscorepos = hscoretext.get_rect(left=10, top=560)
+item1pos = item1.get_rect(centerx=400, top=310)
+item2pos = item2.get_rect(centerx=400, top=350)
+item3pos = item3.get_rect(centerx=400, top=390)
+item4pos = item4.get_rect(centerx=400, top=430)
+item5pos = item5.get_rect(centerx=431, top=350)
+item6pos = item6.get_rect(centerx=515, top=350)
+item7pos = item7.get_rect(centerx=473, top=350)
 
 player = Player()  # Создание ракетки
 ball = Ball()  # Создание мячика
@@ -300,15 +296,14 @@ def f_write_score():
         f.close()
 
 
-def clear_items(s=0):
+def clear_items():
     global item1, item2, item3, item4, item5, item6, item7
     if theme == "DARK":
-        if s == 0:
-            item1 = smallfont.render("resume (Esc)", True, white)
-            item2 = smallfont.render("new game (N)", True, white)
-            item3 = smallfont.render("settings (S)", True, white)
-            item4 = smallfont.render("exit (AltF4)", True, white)
-        elif s == 1:
+        item1 = smallfont.render("resume (Esc)", True, white)
+        item2 = smallfont.render("new game (N)", True, white)
+        item3 = smallfont.render("settings (S)", True, white)
+        item4 = smallfont.render("exit (AltF4)", True, white)
+        if settingsopened:
             item1 = smallfont.render("< back (Esc)", True, white)
             item2 = smallfont.render("volume", True, white)
             item3 = smallfont.render("reset (AltR)", True, white)
@@ -317,12 +312,11 @@ def clear_items(s=0):
             item6 = smallfont.render("+", True, white)
             item7 = smallfont.render(f"{volume}", True, white)
     else:
-        if s == 0:
-            item1 = smallfont.render("resume (Esc)", True, black)
-            item2 = smallfont.render("new game (N)", True, black)
-            item3 = smallfont.render("settings (S)", True, black)
-            item4 = smallfont.render("exit (AltF4)", True, black)
-        elif s == 1:
+        item1 = smallfont.render("resume (Esc)", True, black)
+        item2 = smallfont.render("new game (N)", True, black)
+        item3 = smallfont.render("settings (S)", True, black)
+        item4 = smallfont.render("exit (AltF4)", True, black)
+        if settingsopened:
             item1 = smallfont.render("< back (Esc)", True, black)
             item2 = smallfont.render("volume", True, black)
             item3 = smallfont.render("reset (AltR)", True, black)
@@ -332,26 +326,17 @@ def clear_items(s=0):
             item7 = smallfont.render(f"{volume}", True, black)
 
 
-def center_items(s=0):
+def center_items():
     global item1pos, item2pos, item3pos, item4pos, item5pos, item6pos, item7pos
-    item1pos = item1.get_rect(centerx=400)
-    item1pos.top = 310
-    item3pos = item3.get_rect(centerx=400)
-    item3pos.top = 390
-    item4pos = item4.get_rect(centerx=400)
-    item4pos.top = 430
-    if s == 0:
-        item2pos = item2.get_rect(centerx=400)
-        item2pos.top = 350
-    if s == 1:
-        item2pos = item2.get_rect(centerx=337)
-        item2pos.top = 350
-        item5pos = item5.get_rect(centerx=431)
-        item5pos.top = 350
-        item6pos = item6.get_rect(centerx=515)
-        item6pos.top = 350
-        item7pos = item7.get_rect(centerx=473)
-        item7pos.top = 350
+    item1pos = item1.get_rect(centerx=400, top=310)
+    item2pos = item2.get_rect(centerx=400, top=350)
+    item3pos = item3.get_rect(centerx=400, top=390)
+    item4pos = item4.get_rect(centerx=400, top=430)
+    if settingsopened:
+        item2pos = item2.get_rect(centerx=337, top=350)
+        item5pos = item5.get_rect(centerx=431, top=350)
+        item6pos = item6.get_rect(centerx=515, top=350)
+        item7pos = item7.get_rect(centerx=473, top=350)
 
 
 def pause():  # Большая функция, отвечающая за паузу
@@ -543,7 +528,6 @@ def settings():  # Большая функция, отвечающая за на
         item4,          \
         item5,          \
         item6
-
     while settingsopened:
         if speedup:
             screen.blit(xtext, xpos)
@@ -591,14 +575,13 @@ def settings():  # Большая функция, отвечающая за на
                 if event.key == K_EQUALS or event.key == K_KP_PLUS:
                     if volume < 100:
                         volume += 5
-
                 if event.key == K_F5:
                     displayers()
         if item1pos.left <= get_mouse_x() <= item1pos.right and \
                 item1pos.top <= get_mouse_y() <= item1pos.bottom:
-            clear_items(1)
+            clear_items()
             item1 = mediumfont.render("< back (Esc)", True, grey)
-            center_items(1)
+            center_items()
             if event.type == MOUSEBUTTONUP:
                 if event.button == 1:
                     settingsopened = False
@@ -606,26 +589,25 @@ def settings():  # Большая функция, отвечающая за на
                     center_items()
         elif item3pos.left <= get_mouse_x() <= item3pos.right and \
                 item3pos.top <= get_mouse_y() <= item3pos.bottom:
-            clear_items(1)
+            clear_items()
             item3 = mediumfont.render("reset (AltR)", True, grey)
-            center_items(1)
+            center_items()
             if event.type == MOUSEBUTTONUP:
                 if event.button == 1:
                     reset()
         elif item4pos.left <= get_mouse_x() <= item4pos.right and \
                 item4pos.top <= get_mouse_y() <= item4pos.bottom:
-            clear_items(1)
+            clear_items()
             item4 = mediumfont.render("players (F5)", True, grey)
-            center_items(1)
+            center_items()
             if event.type == MOUSEBUTTONUP:
                 if event.button == 1:
                     displayers()
         elif item5pos.left <= get_mouse_x() <= item5pos.right and \
                 item5pos.top <= get_mouse_y() <= item5pos.bottom:
-            clear_items(1)
-            if volume > 0:
-                item5 = smallfont.render("-", True, grey)
-            center_items(1)
+            clear_items()
+            item5 = smallfont.render("-", True, grey)
+            center_items()
             if event.type == MOUSEBUTTONUP:
                 if event.button == 1:
                     if volume > 0:
@@ -634,10 +616,9 @@ def settings():  # Большая функция, отвечающая за на
                         pygame.mixer.music.set_volume(volume / 100)
         elif item6pos.left <= get_mouse_x() <= item6pos.right and \
                 item6pos.top <= get_mouse_y() <= item6pos.bottom:
-            clear_items(1)
-            if volume < 100:
-                item6 = smallfont.render("+", True, grey)
-            center_items(1)
+            clear_items()
+            item6 = smallfont.render("+", True, grey)
+            center_items()
             if event.type == MOUSEBUTTONUP:
                 if event.button == 1:
                     if volume < 100:
@@ -645,8 +626,8 @@ def settings():  # Большая функция, отвечающая за на
                     event.button = 0
                     pygame.mixer.music.set_volume(volume / 100)
         else:
-            clear_items(1)
-            center_items(1)
+            clear_items()
+            center_items()
 
         pygame.display.flip()
         clock.tick(fps)
