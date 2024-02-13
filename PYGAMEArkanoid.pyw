@@ -44,6 +44,7 @@ fps = 90
 developer = "@super_nuke"
 score = 0
 volume = 100
+difference = 0
 
 # Шрифты
 font = pygame.font.SysFont("Courier", 45, bold=True)
@@ -65,8 +66,7 @@ class Block(pygame.sprite.Sprite):
 
     def __init__(self, color, x, y):
         super().__init__()
-        self.image = pygame.image.load(os.path.join("images",
-                                                    "blocks",
+        self.image = pygame.image.load(os.path.join("images", "blocks",
                                                     f"{color}block.png"))
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -87,14 +87,10 @@ class Ball(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         if theme == "DARK":
-            self.image = pygame.image.load(os.path.join("images",
-                                                        "ball",
-                                                        "dark_theme",
+            self.image = pygame.image.load(os.path.join("images", "ball", "dark_theme",
                                                         "ballframe1.png"))
         else:
-            self.image = pygame.image.load(os.path.join("images",
-                                                        "ball",
-                                                        "light_theme",
+            self.image = pygame.image.load(os.path.join("images", "ball", "light_theme",
                                                         "ballframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
@@ -142,14 +138,10 @@ class Player(pygame.sprite.Sprite):
         self.width = 100
         self.height = 15
         if theme == "DARK":
-            self.image = pygame.image.load(os.path.join("images",
-                                                        "player",
-                                                        "dark_theme",
+            self.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
                                                         "playerframe1.png"))
         else:
-            self.image = pygame.image.load(os.path.join("images",
-                                                        "player",
-                                                        "light_theme",
+            self.image = pygame.image.load(os.path.join("images", "player", "light_theme",
                                                         "playerframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
@@ -364,25 +356,17 @@ def pause():  # Большая функция, отвечающая за пау�
             xtext = smallfont.render("X", True, white)
             sptext = smallfont.render("||", True, white)
             hscoretext = smallfont.render(f"Best score: {highscore}", True, white)
-            ball.image = pygame.image.load(os.path.join("images",
-                                                        "ball",
-                                                        "dark_theme",
+            ball.image = pygame.image.load(os.path.join("images", "ball", "dark_theme",
                                                         f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images",
-                                                          "player",
-                                                          "dark_theme",
+            player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
                                                           f"playerframe{playerframe}.png"))
         else:
             xtext = smallfont.render("X", True, black)
             sptext = smallfont.render("||", True, black)
             hscoretext = smallfont.render(f"Best score: {highscore}", True, black)
-            ball.image = pygame.image.load(os.path.join("images",
-                                                        "ball",
-                                                        "light_theme",
+            ball.image = pygame.image.load(os.path.join("images", "ball", "light_theme",
                                                         f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images",
-                                                          "player",
-                                                          "light_theme",
+            player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
                                                           f"playerframe{playerframe}.png"))
         if speedup:
             screen.blit(xtext, xpos)
@@ -534,23 +518,15 @@ def settings():  # Большая функция, отвечающая за на
         fog.set_alpha(200)
         if theme == "DARK":
             fog.fill(black)
-            ball.image = pygame.image.load(os.path.join("images",
-                                                        "ball",
-                                                        "dark_theme",
+            ball.image = pygame.image.load(os.path.join("images", "ball", "dark_theme",
                                                         f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images",
-                                                          "player",
-                                                          "dark_theme",
+            player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
                                                           f"playerframe{playerframe}.png"))
         else:
             fog.fill(white)
-            ball.image = pygame.image.load(os.path.join("images",
-                                                        "ball",
-                                                        "light_theme",
+            ball.image = pygame.image.load(os.path.join("images", "ball", "light_theme",
                                                         f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images",
-                                                          "player",
-                                                          "light_theme",
+            player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
                                                           f"playerframe{playerframe}.png"))
         allsprites.draw(screen)
         screen.blit(fog, (0, 0))
@@ -821,15 +797,11 @@ while developer == "@super_nuke":
             clock.tick(fps)
             if theme == "DARK":
                 screen.fill(black)
-                player.image = pygame.image.load(os.path.join("images",
-                                                              "player",
-                                                              "dark_theme",
+                player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
                                                               f"playerframe{playerframe}.png"))
             else:
                 screen.fill(white)
-                player.image = pygame.image.load(os.path.join("images",
-                                                              "player",
-                                                              "light_theme",
+                player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
                                                               f"playerframe{playerframe}.png"))
             allsprites.remove(ball)
             allsprites.draw(screen)
@@ -935,15 +907,11 @@ while developer == "@super_nuke":
             clock.tick(fps)
             if theme == "DARK":
                 screen.fill(black)
-                player.image = pygame.image.load(os.path.join("images",
-                                                              "player",
-                                                              "dark_theme",
+                player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
                                                               f"playerframe{playerframe}.png"))
             else:
                 screen.fill(white)
-                player.image = pygame.image.load(os.path.join("images",
-                                                              "player",
-                                                              "light_theme",
+                player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
                                                               f"playerframe{playerframe}.png"))
             allsprites.remove(ball)
             allsprites.draw(screen)
@@ -1241,22 +1209,14 @@ while developer == "@super_nuke":
         if playerframe == 14:
             playerframe = 1
         if theme == "DARK":
-            ball.image = pygame.image.load(os.path.join("images",
-                                                        "ball",
-                                                        "dark_theme",
+            ball.image = pygame.image.load(os.path.join("images", "ball", "dark_theme",
                                                         f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images",
-                                                          "player",
-                                                          "dark_theme",
+            player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
                                                           f"playerframe{playerframe}.png"))
         else:
-            ball.image = pygame.image.load(os.path.join("images",
-                                                        "ball",
-                                                        "light_theme",
+            ball.image = pygame.image.load(os.path.join("images", "ball", "light_theme",
                                                         f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images",
-                                                          "player",
-                                                          "light_theme",
+            player.image = pygame.image.load(os.path.join("images", "player",  "light_theme",
                                                           f"playerframe{playerframe}.png"))
         framecount += 1
 
