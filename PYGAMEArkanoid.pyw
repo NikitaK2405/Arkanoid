@@ -870,7 +870,6 @@ while developer == "@super_nuke":
                 player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
                                                               f"playerframe{playerframe}.png"))
             allsprites.remove(ball)
-            allsprites.draw(screen)
             allsprites.add(ball)
 
             if not nextlevel:
@@ -880,6 +879,8 @@ while developer == "@super_nuke":
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
             text1pos.top = 450
             screen.blit(text1, text1pos)
+
+            allsprites.draw(screen)
 
             if result == "Victory":
                 screen.blit(text2, text2pos)
@@ -980,7 +981,6 @@ while developer == "@super_nuke":
                 player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
                                                               f"playerframe{playerframe}.png"))
             allsprites.remove(ball)
-            allsprites.draw(screen)
             allsprites.add(ball)
 
             if not nextlevel:
@@ -990,6 +990,8 @@ while developer == "@super_nuke":
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
             text1pos.top = 450
             screen.blit(text1, text1pos)
+
+            allsprites.draw(screen)
 
             if result == "Victory":
                 screen.blit(text2, text2pos)
