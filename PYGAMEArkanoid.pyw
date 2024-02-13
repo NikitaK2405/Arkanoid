@@ -9,7 +9,7 @@ from pygame.locals import *
 # Цвета
 black = (0, 0, 0)
 white = (255, 255, 255)
-grey = (128, 128, 128)
+grey = (127, 127, 127)
 red = (225, 0, 0)
 green = (0, 255, 0)
 colors = ["red", "orange", "yellow", "green", "lightblue", "blue", "purple"]  # Цвета блоков
@@ -34,17 +34,18 @@ hints = ["even more ways to move the paddle", "try harder", "watch out", "press 
          "press F", "press Esc", "don't press T", "press X", "blocks are falling", "listen to the music",
          "RAINBOW!", "don't play too much", "WASD, arrows and mouse", "no bugs at all", "what is your favourite song?",
          "...", "Arkanoid", "inspired by Taito", "1986", "what is your best score?"]
-pygame.display.set_caption(f"Arkanoid: {random.choice(hints)}")
+pygame.display.set_caption(f"Arkanoid: {random.choice(hints)}")  # В заголовке окна пишется случайная фраза
 icon = pygame.Surface((10, 10))
 pygame.display.set_icon(icon)
 pygame.mouse.set_visible(False)
 pygame.event.set_grab(True)
 clock = pygame.time.Clock()
-fps = 90
+fps = 90  # 90 кадров в секунду
 developer = "@super_nuke"
 score = 0
 volume = 100
 difference = 0
+selected = 0
 
 # Шрифты
 font = pygame.font.SysFont("Courier", 45, bold=True)
@@ -64,7 +65,7 @@ settingsopened = False
 class Block(pygame.sprite.Sprite):
     """Класс для всех этих радужных блоков, которые нужно сбивать"""
 
-    def __init__(self, color, x, y):
+    def __init__(self, color, x, y):  # Создание блока
         super().__init__()
         self.image = pygame.image.load(os.path.join("images", "blocks",
                                                     f"{color}block.png"))
@@ -84,7 +85,7 @@ class Ball(pygame.sprite.Sprite):
     width = 20
     height = 20
 
-    def __init__(self):
+    def __init__(self):  # Создание мячика
         super().__init__()
         if theme == "DARK":
             self.image = pygame.image.load(os.path.join("images", "ball", "dark_theme",
@@ -133,7 +134,7 @@ class Ball(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     """Плеер - дальше. Это Ракетка."""
 
-    def __init__(self):
+    def __init__(self):  # Создание ракетки
         super().__init__()
         self.width = 100
         self.height = 15
@@ -157,19 +158,20 @@ class Player(pygame.sprite.Sprite):
         if pygame.key.get_pressed()[K_DOWN] or pygame.key.get_pressed()[K_s]:
             if self.rect.y < 580:
                 self.rect.y += 2
-        if movemode:
+        if movemode:  # Движение ракетки с помощью кнопок. Это неудобно.
             if pygame.key.get_pressed()[K_LEFT] or pygame.key.get_pressed()[K_a]:
                 if self.rect.x >= 5:
                     self.rect.x -= 5
             if pygame.key.get_pressed()[K_RIGHT] or pygame.key.get_pressed()[K_d]:
                 if self.rect.x <= 695:
                     self.rect.x += 5
-        else:
+        else:  # По умолчанию игрок управляет ракеткой мышью
             self.rect.x = get_mouse_x()
             if self.rect.x > self.screenwidth - self.width:
                 self.rect.x = self.screenwidth - self.width
 
 
+# Открытие бинарного файла и чтение данных
 f = open("highscore.dat", "rb")
 try:
     players = pickle.load(f)
@@ -198,6 +200,7 @@ f.close()
 
 fog = pygame.Surface((800, 600))  # Затемняющая поверхность
 
+# Текстовые индикаторы и кнопки
 xtext = smallfont.render("X", True, white)
 sptext = smallfont.render(f"{score}", True, white)
 hscoretext = smallfont.render(f"Best score: {highscore}", True, white)
@@ -221,7 +224,7 @@ item7pos = item7.get_rect(centerx=473, top=350)
 
 player = Player()  # Создание ракетки
 ball = Ball()  # Создание мячика
-startballpos = 180
+startballpos = 180  # Начальная ордината мячика
 
 # Добавление спрайтов в группы
 blocks = pygame.sprite.Group()
@@ -232,7 +235,7 @@ allsprites.add(player)
 allsprites.add(ball)
 
 
-def close_arkanoid():
+def close_arkanoid():  # Выход из игры
     f.close()
     pygame.quit()
     sys.exit()
@@ -254,7 +257,7 @@ def load_theme():  # Собственно Плеер.
     return music_to_load
 
 
-def f_write_score():
+def f_write_score():  # Запись данных в бинарный файл и их чтение
     global f, players, score, highscore, level, highlevel
     f = open("highscore.dat", "rb")
     try:
@@ -288,7 +291,7 @@ def f_write_score():
         f.close()
 
 
-def clear_items():
+def clear_items():  # Снятие выделения с элементов интерфейса
     global item1, item2, item3, item4, item5, item6, item7
     if theme == "DARK":
         item1 = smallfont.render("resume (Esc)", True, white)
@@ -299,7 +302,7 @@ def clear_items():
             item1 = smallfont.render("< back (Esc)", True, white)
             item2 = smallfont.render("volume", True, white)
             item3 = smallfont.render("players (F5)", True, white)
-            item4 = smallfont.render("more (Space)", True, white)
+            item4 = smallfont.render("more (Shift)", True, white)
             item5 = smallfont.render("-", True, white)
             item6 = smallfont.render("+", True, white)
             item7 = smallfont.render(f"{volume}", True, white)
@@ -312,13 +315,13 @@ def clear_items():
             item1 = smallfont.render("< back (Esc)", True, black)
             item2 = smallfont.render("volume", True, black)
             item3 = smallfont.render("players (F5)", True, black)
-            item4 = smallfont.render("more (Space)", True, black)
+            item4 = smallfont.render("more (Shift)", True, black)
             item5 = smallfont.render("-", True, black)
             item6 = smallfont.render("+", True, black)
             item7 = smallfont.render(f"{volume}", True, black)
 
 
-def center_items():
+def center_items():  # Возвращение сдвинувшихся элементов интерфейса на исходные позиции
     global item1pos, item2pos, item3pos, item4pos, item5pos, item6pos, item7pos
     item1pos = item1.get_rect(centerx=400, top=310)
     item2pos = item2.get_rect(centerx=400, top=350)
@@ -334,6 +337,7 @@ def center_items():
 def pause():  # Большая функция, отвечающая за паузу
     global event,       \
         paused,         \
+        selected,       \
         settingsopened, \
         game_over,      \
         result,         \
@@ -426,70 +430,89 @@ def pause():  # Большая функция, отвечающая за пау�
                     blocks = pygame.sprite.Group()
                 if event.key == K_s:
                     settingsopened = True
+                if event.key == K_DOWN:
+                    if selected == 0 or selected == 4:
+                        pygame.mouse.set_pos(item1pos.centerx, item1pos.centery)
+                    elif selected == 1:
+                        pygame.mouse.set_pos(item2pos.centerx, item2pos.centery)
+                    elif selected == 2:
+                        pygame.mouse.set_pos(item3pos.centerx, item3pos.centery)
+                    elif selected == 3:
+                        pygame.mouse.set_pos(item4pos.centerx, item4pos.centery)
+                if event.key == K_UP:
+                    if selected == 0 or selected == 1:
+                        pygame.mouse.set_pos(item4pos.centerx, item4pos.centery)
+                    elif selected == 2:
+                        pygame.mouse.set_pos(item1pos.centerx, item1pos.centery)
+                    elif selected == 3:
+                        pygame.mouse.set_pos(item2pos.centerx, item2pos.centery)
+                    elif selected == 4:
+                        pygame.mouse.set_pos(item3pos.centerx, item3pos.centery)
 
             if item1pos.left <= get_mouse_x() <= item1pos.right and \
                     item1pos.top <= get_mouse_y() <= item1pos.bottom:
                 clear_items()
                 item1 = mediumfont.render("resume (Esc)", True, grey)
                 center_items()
-                if event.type == MOUSEBUTTONUP:
-                    if event.button == 1:
-                        pygame.mouse.set_visible(False)
-                        pygame.event.set_grab(True)
-                        pygame.mixer.music.unpause()
-                        if pygame.mixer.music.get_endevent():
-                            pygame.mixer.music.queue(load_theme())
-                        paused = False
+                selected = 1
+                if event.type == MOUSEBUTTONUP and event.button == 1 or event.type == KEYDOWN and event.key == K_SPACE:
+                    pygame.mouse.set_visible(False)
+                    pygame.event.set_grab(True)
+                    pygame.mixer.music.unpause()
+                    if pygame.mixer.music.get_endevent():
+                        pygame.mixer.music.queue(load_theme())
+                    paused = False
 
             elif item2pos.left <= get_mouse_x() <= item2pos.right and \
                     item2pos.top <= get_mouse_y() <= item2pos.bottom:
                 clear_items()
                 item2 = mediumfont.render("new game (N)", True, grey)
                 center_items()
-                if event.type == MOUSEBUTTONUP:
-                    if event.button == 1:
-                        if theme == "DARK":
-                            screen.fill(black)
-                        else:
-                            screen.fill(white)
-                        pygame.mouse.set_visible(False)
-                        pygame.event.set_grab(True)
-                        pygame.mixer.music.stop()
-                        pygame.mixer.music.queue(load_theme())
-                        paused = False
-                        result = None
-                        game_over = True
-                        nextlevel = False
-                        nrow = 4
-                        score = 0
-                        level = 1
-                        deadblocks.clear()
-                        allsprites = pygame.sprite.Group()
-                        allsprites.add(ball)
-                        allsprites.add(player)
-                        blocks = pygame.sprite.Group()
+                selected = 2
+                if event.type == MOUSEBUTTONUP and event.button == 1 or event.type == KEYDOWN and event.key == K_SPACE:
+                    if theme == "DARK":
+                        screen.fill(black)
+                    else:
+                        screen.fill(white)
+                    pygame.mouse.set_visible(False)
+                    pygame.event.set_grab(True)
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.queue(load_theme())
+                    paused = False
+                    result = None
+                    game_over = True
+                    nextlevel = False
+                    nrow = 4
+                    score = 0
+                    level = 1
+                    deadblocks.clear()
+                    allsprites = pygame.sprite.Group()
+                    allsprites.add(ball)
+                    allsprites.add(player)
+                    blocks = pygame.sprite.Group()
 
             elif item3pos.left <= get_mouse_x() <= item3pos.right and \
                     item3pos.top <= get_mouse_y() <= item3pos.bottom:
                 clear_items()
                 item3 = mediumfont.render("settings (S)", True, grey)
                 center_items()
-                if event.type == MOUSEBUTTONUP:
-                    if event.button == 1:
-                        settingsopened = True
+                selected = 3
+                if event.type == MOUSEBUTTONUP and event.button == 1 or event.type == KEYDOWN and event.key == K_SPACE:
+                    settingsopened = True
 
             elif item4pos.left <= get_mouse_x() <= item4pos.right and \
                     item4pos.top <= get_mouse_y() <= item4pos.bottom:
                 clear_items()
                 item4 = mediumfont.render("exit (AltF4)", True, grey)
                 center_items()
-                if event.type == MOUSEBUTTONUP:
-                    if event.button == 1:
-                        close_arkanoid()
+                selected = 4
+                if event.type == MOUSEBUTTONUP and event.button == 1 or event.type == KEYDOWN and event.key == K_SPACE:
+                    close_arkanoid()
 
             else:
                 clear_items()
                 center_items()
+                selected = 0
 
         if settingsopened:
             settings()
@@ -501,6 +524,7 @@ def pause():  # Большая функция, отвечающая за пау�
 def settings():  # Большая функция, отвечающая за настройки
     global event,       \
         settingsopened, \
+        selected,       \
         theme,          \
         volume,         \
         xtext,          \
@@ -545,8 +569,8 @@ def settings():  # Большая функция, отвечающая за на
                 if event.mod == KMOD_ALT:
                     if event.key == K_F4:
                         close_arkanoid()
-                if event.key == K_SPACE:
-                    more()
+                if event.key == K_LSHIFT or event.key == K_RSHIFT:
+                    ext_settings()
                 if event.key == K_t:
                     if theme == "LIGHT":
                         theme = "DARK"
@@ -569,52 +593,94 @@ def settings():  # Большая функция, отвечающая за на
                         volume += 5
                 if event.key == K_F5:
                     displayers()
+                if event.key == K_DOWN:
+                    if selected == 0 or selected == 4:
+                        pygame.mouse.set_pos(item1pos.centerx, item1pos.centery)
+                    elif selected == 1:
+                        pygame.mouse.set_pos(item5pos.centerx, item5pos.centery)
+                    elif selected == 3:
+                        pygame.mouse.set_pos(item4pos.centerx, item4pos.centery)
+                    elif selected == 5:
+                        pygame.mouse.set_pos(item6pos.centerx, item6pos.centery)
+                    elif selected == 6:
+                        pygame.mouse.set_pos(item3pos.centerx, item3pos.centery)
+                if event.key == K_UP:
+                    if selected == 0 or selected == 1:
+                        pygame.mouse.set_pos(item4pos.centerx, item4pos.centery)
+                    elif selected == 3:
+                        pygame.mouse.set_pos(item6pos.centerx, item6pos.centery)
+                    elif selected == 4:
+                        pygame.mouse.set_pos(item3pos.centerx, item3pos.centery)
+                    elif selected == 5:
+                        pygame.mouse.set_pos(item1pos.centerx, item1pos.centery)
+                    elif selected == 6:
+                        pygame.mouse.set_pos(item5pos.centerx, item5pos.centery)
+                if event.key == K_SPACE:
+                    if selected == 1:
+                        settingsopened = False
+                        clear_items()
+                        center_items()
+                    elif selected == 3:
+                        displayers()
+                    elif selected == 4:
+                        ext_settings()
+                    elif selected == 5:
+                        if volume > 0:
+                            volume -= 5
+                            # event.button = 0
+                            pygame.mixer.music.set_volume(volume / 100)
+                    elif selected == 6:
+                        if volume < 100:
+                            volume += 5
+                            # event.button = 0
+                            pygame.mixer.music.set_volume(volume / 100)
+
         if item1pos.left <= get_mouse_x() <= item1pos.right and \
                 item1pos.top <= get_mouse_y() <= item1pos.bottom:
             clear_items()
             item1 = mediumfont.render("< back (Esc)", True, grey)
             center_items()
-            if event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    settingsopened = False
-                    clear_items()
-                    center_items()
+            selected = 1
+            if event.type == MOUSEBUTTONUP and event.button == 1:
+                settingsopened = False
+                clear_items()
+                center_items()
         elif item3pos.left <= get_mouse_x() <= item3pos.right and \
                 item3pos.top <= get_mouse_y() <= item3pos.bottom:
             clear_items()
             item3 = mediumfont.render("players (F5)", True, grey)
             center_items()
-            if event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    displayers()
+            selected = 3
+            if event.type == MOUSEBUTTONUP and event.button == 1:
+                displayers()
         elif item4pos.left <= get_mouse_x() <= item4pos.right and \
                 item4pos.top <= get_mouse_y() <= item4pos.bottom:
             clear_items()
-            item4 = mediumfont.render("more (Space)", True, grey)
+            item4 = mediumfont.render("more (Shift)", True, grey)
             center_items()
-            if event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    more()
+            selected = 4
+            if event.type == MOUSEBUTTONUP and event.button == 1:
+                ext_settings()
         elif item5pos.left <= get_mouse_x() <= item5pos.right and \
                 item5pos.top <= get_mouse_y() <= item5pos.bottom:
             clear_items()
             item5 = smallfont.render("-", True, grey)
             center_items()
-            if event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    if volume > 0:
-                        volume -= 5
-                        event.button = 0
-                        pygame.mixer.music.set_volume(volume / 100)
+            selected = 5
+            if event.type == MOUSEBUTTONUP and event.button == 1:
+                if volume > 0:
+                    volume -= 5
+                    event.button = 0
+                    pygame.mixer.music.set_volume(volume / 100)
         elif item6pos.left <= get_mouse_x() <= item6pos.right and \
                 item6pos.top <= get_mouse_y() <= item6pos.bottom:
             clear_items()
             item6 = smallfont.render("+", True, grey)
             center_items()
-            if event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    if volume < 100:
-                        volume += 5
+            selected = 6
+            if event.type == MOUSEBUTTONUP and event.button == 1:
+                if volume < 100:
+                    volume += 5
                     event.button = 0
                     pygame.mixer.music.set_volume(volume / 100)
         else:
@@ -629,7 +695,7 @@ def displayers():  # Список игроков
     pass
 
 
-def more():  # Дополнительные настройки
+def ext_settings():  # Дополнительные настройки
     pass
 
 
