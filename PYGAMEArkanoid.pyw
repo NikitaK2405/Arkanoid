@@ -6,14 +6,14 @@ import pickle
 import pygame
 from pygame.locals import *
 
+theme = "DARK"
 # Цвета
 black = (0, 0, 0)
 white = (255, 255, 255)
-grey = (127, 127, 127)
+grey = (128, 128, 128)
 red = (225, 0, 0)
 green = (0, 255, 0)
 colors = ["red", "orange", "yellow", "green", "lightblue", "blue", "purple"]  # Цвета блоков
-theme = "DARK"
 
 # Размеры блоков
 block_width = 23
@@ -29,23 +29,15 @@ pygame.init()  # Инициализация Pygame
 screen = pygame.display.set_mode([800, 600])
 background = pygame.Surface(screen.get_size())
 os.environ["SDL_VIDEO_CENTERED"] = "1"
-hints = ["even more ways to move the paddle", "try harder", "watch out", "press AltF4", "time to think",
-         "do you have a strategy?", "chill out", "hurry up!", "press W", "press A", "press S", "press D",
-         "press F", "press Esc", "don't press T", "press X", "blocks are falling", "listen to the music",
-         "RAINBOW!", "don't play too much", "WASD, arrows and mouse", "no bugs at all", "what is your favourite song?",
-         "...", "Arkanoid", "inspired by Taito", "1986", "what is your best score?"]
-pygame.display.set_caption(f"Arkanoid: {random.choice(hints)}")  # В заголовке окна пишется случайная фраза
+pygame.display.set_caption("Arkanoid")
 icon = pygame.Surface((10, 10))
 pygame.display.set_icon(icon)
 pygame.mouse.set_visible(False)
 pygame.event.set_grab(True)
 clock = pygame.time.Clock()
-fps = 90  # 90 кадров в секунду
+fps = 90
 developer = "@super_nuke"
 score = 0
-volume = 100
-difference = 0
-selected = 0
 
 # Шрифты
 font = pygame.font.SysFont("Courier", 45, bold=True)
@@ -59,15 +51,15 @@ music_themes = [1, 2, 3, 4, 5]
 
 start = False
 paused = False
-settingsopened = False
 
 
 class Block(pygame.sprite.Sprite):
     """Класс для всех этих радужных блоков, которые нужно сбивать"""
 
-    def __init__(self, color, x, y):  # Создание блока
+    def __init__(self, color, x, y):
         super().__init__()
-        self.image = pygame.image.load(os.path.join("images", "blocks",
+        self.image = pygame.image.load(os.path.join("images",
+                                                    "blocks",
                                                     f"{color}block.png"))
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -85,13 +77,17 @@ class Ball(pygame.sprite.Sprite):
     width = 20
     height = 20
 
-    def __init__(self):  # Создание мячика
+    def __init__(self):
         super().__init__()
         if theme == "DARK":
-            self.image = pygame.image.load(os.path.join("images", "ball", "dark_theme",
+            self.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "dark_theme",
                                                         "ballframe1.png"))
         else:
-            self.image = pygame.image.load(os.path.join("images", "ball", "light_theme",
+            self.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "light_theme",
                                                         "ballframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
@@ -134,15 +130,19 @@ class Ball(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     """Плеер - дальше. Это Ракетка."""
 
-    def __init__(self):  # Создание ракетки
+    def __init__(self):
         super().__init__()
         self.width = 100
         self.height = 15
         if theme == "DARK":
-            self.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
+            self.image = pygame.image.load(os.path.join("images",
+                                                        "player",
+                                                        "dark_theme",
                                                         "playerframe1.png"))
         else:
-            self.image = pygame.image.load(os.path.join("images", "player", "light_theme",
+            self.image = pygame.image.load(os.path.join("images",
+                                                        "player",
+                                                        "light_theme",
                                                         "playerframe1.png"))
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
@@ -158,20 +158,19 @@ class Player(pygame.sprite.Sprite):
         if pygame.key.get_pressed()[K_DOWN] or pygame.key.get_pressed()[K_s]:
             if self.rect.y < 580:
                 self.rect.y += 2
-        if movemode:  # Движение ракетки с помощью кнопок. Это неудобно.
+        if movemode:
             if pygame.key.get_pressed()[K_LEFT] or pygame.key.get_pressed()[K_a]:
                 if self.rect.x >= 5:
                     self.rect.x -= 5
             if pygame.key.get_pressed()[K_RIGHT] or pygame.key.get_pressed()[K_d]:
                 if self.rect.x <= 695:
                     self.rect.x += 5
-        else:  # По умолчанию игрок управляет ракеткой мышью
+        else:
             self.rect.x = get_mouse_x()
             if self.rect.x > self.screenwidth - self.width:
                 self.rect.x = self.screenwidth - self.width
 
 
-# Открытие бинарного файла и чтение данных
 f = open("highscore.dat", "rb")
 try:
     players = pickle.load(f)
@@ -198,33 +197,20 @@ else:
     pickle.dump(players, f, True)
 f.close()
 
-fog = pygame.Surface((800, 600))  # Затемняющая поверхность
-
-# Текстовые индикаторы и кнопки
-xtext = smallfont.render("X", True, white)
-sptext = smallfont.render(f"{score}", True, white)
-hscoretext = smallfont.render(f"Best score: {highscore}", True, white)
-item1 = smallfont.render("resume (Esc)", True, white)
-item2 = smallfont.render("new game (N)", True, white)
-item3 = smallfont.render("settings (S)", True, white)
-item4 = smallfont.render("exit (AltF4)", True, white)
-item5 = smallfont.render("-", True, white)
-item6 = smallfont.render("+", True, white)
-item7 = smallfont.render(f"{volume}", True, white)
-xpos = xtext.get_rect(centerx=775, top=5)
-sppos = sptext.get_rect(left=5, top=5)
-hscorepos = hscoretext.get_rect(left=10, top=560)
-item1pos = item1.get_rect(centerx=400, top=310)
-item2pos = item2.get_rect(centerx=400, top=350)
-item3pos = item3.get_rect(centerx=400, top=390)
-item4pos = item4.get_rect(centerx=400, top=430)
-item5pos = item5.get_rect(centerx=431, top=350)
-item6pos = item6.get_rect(centerx=515, top=350)
-item7pos = item7.get_rect(centerx=473, top=350)
+if theme == "DARK":
+    xtext = smallfont.render("X", True, white)
+    sptext = smallfont.render(f"{score}", True, white)
+else:
+    xtext = smallfont.render("X", True, black)
+    sptext = smallfont.render(f"{score}", True, black)
+xpos = xtext.get_rect(centerx=775)
+xpos.top = 5
+sppos = sptext.get_rect(left=5)
+sppos.top = 5
 
 player = Player()  # Создание ракетки
 ball = Ball()  # Создание мячика
-startballpos = 180  # Начальная ордината мячика
+startballpos = 180
 
 # Добавление спрайтов в группы
 blocks = pygame.sprite.Group()
@@ -235,7 +221,7 @@ allsprites.add(player)
 allsprites.add(ball)
 
 
-def close_arkanoid():  # Выход из игры
+def close_arkanoid():
     f.close()
     pygame.quit()
     sys.exit()
@@ -257,7 +243,7 @@ def load_theme():  # Собственно Плеер.
     return music_to_load
 
 
-def f_write_score():  # Запись данных в бинарный файл и их чтение
+def f_write_score():
     global f, players, score, highscore, level, highlevel
     f = open("highscore.dat", "rb")
     try:
@@ -291,54 +277,9 @@ def f_write_score():  # Запись данных в бинарный файл �
         f.close()
 
 
-def clear_items():  # Снятие выделения с элементов интерфейса
-    global item1, item2, item3, item4, item5, item6, item7
-    if theme == "DARK":
-        item1 = smallfont.render("resume (Esc)", True, white)
-        item2 = smallfont.render("new game (N)", True, white)
-        item3 = smallfont.render("settings (S)", True, white)
-        item4 = smallfont.render("exit (AltF4)", True, white)
-        if settingsopened:
-            item1 = smallfont.render("< back (Esc)", True, white)
-            item2 = smallfont.render("volume", True, white)
-            item3 = smallfont.render("players (F5)", True, white)
-            item4 = smallfont.render("more (Shift)", True, white)
-            item5 = smallfont.render("-", True, white)
-            item6 = smallfont.render("+", True, white)
-            item7 = smallfont.render(f"{volume}", True, white)
-    else:
-        item1 = smallfont.render("resume (Esc)", True, black)
-        item2 = smallfont.render("new game (N)", True, black)
-        item3 = smallfont.render("settings (S)", True, black)
-        item4 = smallfont.render("exit (AltF4)", True, black)
-        if settingsopened:
-            item1 = smallfont.render("< back (Esc)", True, black)
-            item2 = smallfont.render("volume", True, black)
-            item3 = smallfont.render("players (F5)", True, black)
-            item4 = smallfont.render("more (Shift)", True, black)
-            item5 = smallfont.render("-", True, black)
-            item6 = smallfont.render("+", True, black)
-            item7 = smallfont.render(f"{volume}", True, black)
-
-
-def center_items():  # Возвращение сдвинувшихся элементов интерфейса на исходные позиции
-    global item1pos, item2pos, item3pos, item4pos, item5pos, item6pos, item7pos
-    item1pos = item1.get_rect(centerx=400, top=310)
-    item2pos = item2.get_rect(centerx=400, top=350)
-    item3pos = item3.get_rect(centerx=400, top=390)
-    item4pos = item4.get_rect(centerx=400, top=430)
-    if settingsopened:
-        item2pos = item2.get_rect(centerx=337, top=350)
-        item5pos = item5.get_rect(centerx=431, top=350)
-        item6pos = item6.get_rect(centerx=515, top=350)
-        item7pos = item7.get_rect(centerx=473, top=350)
-
-
-def pause():  # Большая функция, отвечающая за паузу
+def pausecheck():  # Огромная функция, отвечающая за паузу
     global event,       \
         paused,         \
-        selected,       \
-        settingsopened, \
         game_over,      \
         result,         \
         nextlevel,      \
@@ -347,356 +288,256 @@ def pause():  # Большая функция, отвечающая за пау�
         blocks,         \
         nrow,           \
         level,          \
+        ballframe,      \
+        playerframe,    \
+        framecount,     \
         theme,          \
         xtext,          \
-        sptext,         \
-        hscoretext,     \
-        item1,          \
-        item2,          \
-        item3,          \
-        item4
+        sptext
     while paused:
+        pauseclose = False
+        fog = pygame.Surface((800, 600))  # Затемняющая поверхность
+
+        f_write_score()
+
         if theme == "DARK":
             xtext = smallfont.render("X", True, white)
             sptext = smallfont.render("||", True, white)
             hscoretext = smallfont.render(f"Best score: {highscore}", True, white)
-            ball.image = pygame.image.load(os.path.join("images", "ball", "dark_theme",
-                                                        f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
-                                                          f"playerframe{playerframe}.png"))
+            item1 = smallfont.render("resume (Esc)", True, white)
+            item2 = smallfont.render("new game (N)", True, white)
+            item3 = smallfont.render("exit (AltF4)", True, white)
         else:
             xtext = smallfont.render("X", True, black)
             sptext = smallfont.render("||", True, black)
             hscoretext = smallfont.render(f"Best score: {highscore}", True, black)
-            ball.image = pygame.image.load(os.path.join("images", "ball", "light_theme",
-                                                        f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
-                                                          f"playerframe{playerframe}.png"))
-        if speedup:
-            screen.blit(xtext, xpos)
-        fog.set_alpha(200)
-        if theme == "DARK":
-            fog.fill(black)
-        else:
-            fog.fill(white)
-        allsprites.draw(screen)
-        screen.blit(fog, (0, 0))
-        screen.blit(sptext, sppos)
-        screen.blit(hscoretext, hscorepos)
-        screen.blit(item1, item1pos)
-        screen.blit(item2, item2pos)
-        screen.blit(item3, item3pos)
-        screen.blit(item4, item4pos)
+            item1 = smallfont.render("resume (Esc)", True, black)
+            item2 = smallfont.render("new game (N)", True, black)
+            item3 = smallfont.render("exit (AltF4)", True, black)
+        hscorepos = hscoretext.get_rect(left=10)
+        hscorepos.top = 560
+        item1pos = item1.get_rect(centerx=background.get_width() / 2)
+        item1pos.top = 300
+        item2pos = item2.get_rect(centerx=background.get_width() / 2)
+        item2pos.top = 350
+        item3pos = item3.get_rect(centerx=background.get_width() / 2)
+        item3pos.top = 400
 
-        for event in pygame.event.get():  # Проверка событий
-            if event.type == QUIT:
-                close_arkanoid()
-            if event.type == KEYDOWN:
-                if event.mod == KMOD_ALT:
-                    if event.key == K_F4:
-                        close_arkanoid()
-                if event.key == K_t:
-                    if theme == "LIGHT":
-                        theme = "DARK"
-                    else:
-                        theme = "LIGHT"
-                if event.key == K_ESCAPE:
-                    pygame.mouse.set_visible(False)
-                    pygame.event.set_grab(True)
-                    pygame.mixer.music.unpause()
-                    if pygame.mixer.music.get_endevent():
-                        pygame.mixer.music.queue(load_theme())
-                    paused = False
-                if event.key == K_n:
-                    if theme == "DARK":
-                        screen.fill(black)
-                    else:
-                        screen.fill(white)
-                    pygame.mouse.set_visible(False)
-                    pygame.event.set_grab(True)
-                    pygame.mixer.music.stop()
-                    pygame.mixer.music.queue(load_theme())
-                    paused = False
-                    result = None
-                    game_over = True
-                    nextlevel = False
-                    nrow = 4
-                    score = 0
-                    level = 1
-                    deadblocks.clear()
-                    allsprites = pygame.sprite.Group()
-                    allsprites.add(ball)
-                    allsprites.add(player)
-                    blocks = pygame.sprite.Group()
-                if event.key == K_s:
-                    settingsopened = True
-                if event.key == K_DOWN:
-                    if selected == 0 or selected == 4:
-                        pygame.mouse.set_pos(item1pos.centerx, item1pos.centery)
-                    elif selected == 1:
-                        pygame.mouse.set_pos(item2pos.centerx, item2pos.centery)
-                    elif selected == 2:
-                        pygame.mouse.set_pos(item3pos.centerx, item3pos.centery)
-                    elif selected == 3:
-                        pygame.mouse.set_pos(item4pos.centerx, item4pos.centery)
-                if event.key == K_UP:
-                    if selected == 0 or selected == 1:
-                        pygame.mouse.set_pos(item4pos.centerx, item4pos.centery)
-                    elif selected == 2:
-                        pygame.mouse.set_pos(item1pos.centerx, item1pos.centery)
-                    elif selected == 3:
-                        pygame.mouse.set_pos(item2pos.centerx, item2pos.centery)
-                    elif selected == 4:
-                        pygame.mouse.set_pos(item3pos.centerx, item3pos.centery)
-
-            if item1pos.left <= get_mouse_x() <= item1pos.right and \
-                    item1pos.top <= get_mouse_y() <= item1pos.bottom:
-                clear_items()
-                item1 = mediumfont.render("resume (Esc)", True, grey)
-                center_items()
-                selected = 1
-                if event.type == MOUSEBUTTONUP and event.button == 1 or event.type == KEYDOWN and event.key == K_SPACE:
-                    pygame.mouse.set_visible(False)
-                    pygame.event.set_grab(True)
-                    pygame.mixer.music.unpause()
-                    if pygame.mixer.music.get_endevent():
-                        pygame.mixer.music.queue(load_theme())
-                    paused = False
-
-            elif item2pos.left <= get_mouse_x() <= item2pos.right and \
-                    item2pos.top <= get_mouse_y() <= item2pos.bottom:
-                clear_items()
-                item2 = mediumfont.render("new game (N)", True, grey)
-                center_items()
-                selected = 2
-                if event.type == MOUSEBUTTONUP and event.button == 1 or event.type == KEYDOWN and event.key == K_SPACE:
-                    if theme == "DARK":
-                        screen.fill(black)
-                    else:
-                        screen.fill(white)
-                    pygame.mouse.set_visible(False)
-                    pygame.event.set_grab(True)
-                    pygame.mixer.music.stop()
-                    pygame.mixer.music.queue(load_theme())
-                    paused = False
-                    result = None
-                    game_over = True
-                    nextlevel = False
-                    nrow = 4
-                    score = 0
-                    level = 1
-                    deadblocks.clear()
-                    allsprites = pygame.sprite.Group()
-                    allsprites.add(ball)
-                    allsprites.add(player)
-                    blocks = pygame.sprite.Group()
-
-            elif item3pos.left <= get_mouse_x() <= item3pos.right and \
-                    item3pos.top <= get_mouse_y() <= item3pos.bottom:
-                clear_items()
-                item3 = mediumfont.render("settings (S)", True, grey)
-                center_items()
-                selected = 3
-                if event.type == MOUSEBUTTONUP and event.button == 1 or event.type == KEYDOWN and event.key == K_SPACE:
-                    settingsopened = True
-
-            elif item4pos.left <= get_mouse_x() <= item4pos.right and \
-                    item4pos.top <= get_mouse_y() <= item4pos.bottom:
-                clear_items()
-                item4 = mediumfont.render("exit (AltF4)", True, grey)
-                center_items()
-                selected = 4
-                if event.type == MOUSEBUTTONUP and event.button == 1 or event.type == KEYDOWN and event.key == K_SPACE:
-                    close_arkanoid()
-
+        selected = 0
+        while not pauseclose:
+            if theme == "DARK":
+                xtext = smallfont.render("X", True, white)
+                sptext = smallfont.render("||", True, white)
+                hscoretext = smallfont.render(f"Best score: {highscore}", True, white)
+                if selected != 1:
+                    item1 = smallfont.render("resume (Esc)", True, white)
+                if selected != 2:
+                    item2 = smallfont.render("new game (N)", True, white)
+                if selected != 3:
+                    item3 = smallfont.render("exit (AltF4)", True, white)
+                ball.image = pygame.image.load(os.path.join("images",
+                                                            "ball",
+                                                            "dark_theme",
+                                                            f"ballframe{ballframe}.png"))
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "dark_theme",
+                                                              f"playerframe{playerframe}.png"))
             else:
-                clear_items()
-                center_items()
-                selected = 0
+                xtext = smallfont.render("X", True, black)
+                sptext = smallfont.render("||", True, black)
+                hscoretext = smallfont.render(f"Best score: {highscore}", True, black)
+                if selected != 1:
+                    item1 = smallfont.render("resume (Esc)", True, black)
+                if selected != 2:
+                    item2 = smallfont.render("new game (N)", True, black)
+                if selected != 3:
+                    item3 = smallfont.render("exit (AltF4)", True, black)
+                ball.image = pygame.image.load(os.path.join("images",
+                                                            "ball",
+                                                            "light_theme",
+                                                            f"ballframe{ballframe}.png"))
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "light_theme",
+                                                              f"playerframe{playerframe}.png"))
+            if speedup:
+                screen.blit(xtext, xpos)
+            fog.set_alpha(200)
+            if theme == "DARK":
+                fog.fill(black)
+            else:
+                fog.fill(white)
+            allsprites.draw(screen)
+            screen.blit(fog, (0, 0))
+            screen.blit(sptext, sppos)
+            screen.blit(hscoretext, hscorepos)
+            screen.blit(item1, item1pos)
+            screen.blit(item2, item2pos)
+            screen.blit(item3, item3pos)
 
-        if settingsopened:
-            settings()
+            for event in pygame.event.get():  # Проверка событий
+                if event.type == QUIT:
+                    close_arkanoid()
+                if event.type == KEYDOWN:
+                    if event.mod == KMOD_ALT:
+                        if event.key == K_F4:
+                            close_arkanoid()
+                    if event.key == K_t:
+                        if theme == "LIGHT":
+                            theme = "DARK"
+                        else:
+                            theme = "LIGHT"
+                    if event.key == K_ESCAPE:
+                        pygame.mouse.set_visible(False)
+                        pygame.event.set_grab(True)
+                        pygame.mixer.music.set_volume(volume)
+                        if pygame.mixer.music.get_endevent():
+                            pygame.mixer.music.queue(load_theme())
+                        paused = False
+                        pauseclose = True
+                    if event.key == K_n:
+                        if theme == "DARK":
+                            screen.fill(black)
+                        else:
+                            screen.fill(white)
+                        pygame.mouse.set_visible(False)
+                        pygame.event.set_grab(True)
+                        pygame.mixer.music.set_volume(volume)
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.queue(load_theme())
+                        paused = False
+                        pauseclose = True
+                        result = None
+                        game_over = True
+                        nextlevel = False
+                        nrow = 4
+                        score = 0
+                        level = 1
+                        deadblocks.clear()
+                        allsprites = pygame.sprite.Group()
+                        allsprites.add(ball)
+                        allsprites.add(player)
+                        blocks = pygame.sprite.Group()
+                if event.type == pygame.MOUSEMOTION:
+                    if item1pos.left <= get_mouse_x() <= item1pos.right and \
+                            item1pos.top <= get_mouse_y() <= item1pos.bottom:
+                        if theme == "DARK":
+                            item1 = mediumfont.render("resume (Esc)", True, grey)
+                            item2 = smallfont.render("new game (N)", True, white)
+                            item3 = smallfont.render("exit (AltF4)", True, white)
+                        else:
+                            item1 = mediumfont.render("resume (Esc)", True, grey)
+                            item2 = smallfont.render("new game (N)", True, black)
+                            item3 = smallfont.render("exit (AltF4)", True, black)
+                        item1pos = item1.get_rect(centerx=background.get_width() / 2)
+                        item1pos.top = 300
+                        item2pos = item2.get_rect(centerx=background.get_width() / 2)
+                        item2pos.top = 350
+                        item3pos = item3.get_rect(centerx=background.get_width() / 2)
+                        item3pos.top = 400
+                        selected = 1
 
-        pygame.display.flip()
-        clock.tick(fps)
+                    elif item2pos.left <= get_mouse_x() <= item2pos.right and \
+                            item2pos.top <= get_mouse_y() <= item2pos.bottom:
+                        if theme == "DARK":
+                            item1 = smallfont.render("resume (Esc)", True, white)
+                            item2 = mediumfont.render("new game (N)", True, grey)
+                            item3 = smallfont.render("exit (AltF4)", True, white)
+                        else:
+                            item1 = smallfont.render("resume (Esc)", True, black)
+                            item2 = mediumfont.render("new game (N)", True, grey)
+                            item3 = smallfont.render("exit (AltF4)", True, black)
+                        item1pos = item1.get_rect(centerx=background.get_width() / 2)
+                        item1pos.top = 300
+                        item2pos = item2.get_rect(centerx=background.get_width() / 2)
+                        item2pos.top = 350
+                        item3pos = item3.get_rect(centerx=background.get_width() / 2)
+                        item3pos.top = 400
+                        selected = 2
 
+                    elif item3pos.left <= get_mouse_x() <= item3pos.right and \
+                            item3pos.top <= get_mouse_y() <= item3pos.bottom:
+                        if theme == "DARK":
+                            item1 = smallfont.render("resume (Esc)", True, white)
+                            item2 = smallfont.render("new game (N)", True, white)
+                            item3 = mediumfont.render("exit (AltF4)", True, grey)
+                        else:
+                            item1 = smallfont.render("resume (Esc)", True, black)
+                            item2 = smallfont.render("new game (N)", True, black)
+                            item3 = mediumfont.render("exit (AltF4)", True, grey)
+                        item1pos = item1.get_rect(centerx=background.get_width() / 2)
+                        item1pos.top = 300
+                        item2pos = item2.get_rect(centerx=background.get_width() / 2)
+                        item2pos.top = 350
+                        item3pos = item3.get_rect(centerx=background.get_width() / 2)
+                        item3pos.top = 400
+                        selected = 3
 
-def settings():  # Большая функция, отвечающая за настройки
-    global event,       \
-        settingsopened, \
-        selected,       \
-        theme,          \
-        volume,         \
-        xtext,          \
-        sptext,         \
-        hscoretext,     \
-        item1,          \
-        item2,          \
-        item3,          \
-        item4,          \
-        item5,          \
-        item6
-    while settingsopened:
-        if speedup:
-            screen.blit(xtext, xpos)
-        fog.set_alpha(200)
-        if theme == "DARK":
-            fog.fill(black)
-            ball.image = pygame.image.load(os.path.join("images", "ball", "dark_theme",
-                                                        f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
-                                                          f"playerframe{playerframe}.png"))
-        else:
-            fog.fill(white)
-            ball.image = pygame.image.load(os.path.join("images", "ball", "light_theme",
-                                                        f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
-                                                          f"playerframe{playerframe}.png"))
-        allsprites.draw(screen)
-        screen.blit(fog, (0, 0))
-        screen.blit(sptext, sppos)
-        screen.blit(item1, item1pos)
-        screen.blit(item2, item2pos)
-        screen.blit(item3, item3pos)
-        screen.blit(item4, item4pos)
-        screen.blit(item5, item5pos)
-        screen.blit(item6, item6pos)
-        screen.blit(item7, item7pos)
-        for event in pygame.event.get():  # Проверка событий
-            if event.type == QUIT:
-                close_arkanoid()
-            if event.type == KEYDOWN:
-                if event.mod == KMOD_ALT:
-                    if event.key == K_F4:
-                        close_arkanoid()
-                if event.key == K_LSHIFT or event.key == K_RSHIFT:
-                    ext_settings()
-                if event.key == K_t:
-                    if theme == "LIGHT":
-                        theme = "DARK"
                     else:
-                        theme = "LIGHT"
-                if event.key == K_ESCAPE:
-                    settingsopened = False
-                    clear_items()
-                    center_items()
-                if event.key == K_s:
-                    settingsopened = False
-                    clear_items()
-                    center_items()
-                if event.key == K_MINUS or event.key == K_KP_MINUS:
-                    if volume > 0:
-                        volume -= 5
-                        pygame.mixer.music.set_volume(volume / 100)
-                if event.key == K_EQUALS or event.key == K_KP_PLUS:
-                    if volume < 100:
-                        volume += 5
-                if event.key == K_F5:
-                    displayers()
-                if event.key == K_DOWN:
-                    if selected == 0 or selected == 4:
-                        pygame.mouse.set_pos(item1pos.centerx, item1pos.centery)
-                    elif selected == 1:
-                        pygame.mouse.set_pos(item5pos.centerx, item5pos.centery)
-                    elif selected == 3:
-                        pygame.mouse.set_pos(item4pos.centerx, item4pos.centery)
-                    elif selected == 5:
-                        pygame.mouse.set_pos(item6pos.centerx, item6pos.centery)
-                    elif selected == 6:
-                        pygame.mouse.set_pos(item3pos.centerx, item3pos.centery)
-                if event.key == K_UP:
-                    if selected == 0 or selected == 1:
-                        pygame.mouse.set_pos(item4pos.centerx, item4pos.centery)
-                    elif selected == 3:
-                        pygame.mouse.set_pos(item6pos.centerx, item6pos.centery)
-                    elif selected == 4:
-                        pygame.mouse.set_pos(item3pos.centerx, item3pos.centery)
-                    elif selected == 5:
-                        pygame.mouse.set_pos(item1pos.centerx, item1pos.centery)
-                    elif selected == 6:
-                        pygame.mouse.set_pos(item5pos.centerx, item5pos.centery)
-                if event.key == K_SPACE:
-                    if selected == 1:
-                        settingsopened = False
-                        clear_items()
-                        center_items()
-                    elif selected == 3:
-                        displayers()
-                    elif selected == 4:
-                        ext_settings()
-                    elif selected == 5:
-                        if volume > 0:
-                            volume -= 5
-                            # event.button = 0
-                            pygame.mixer.music.set_volume(volume / 100)
-                    elif selected == 6:
-                        if volume < 100:
-                            volume += 5
-                            # event.button = 0
-                            pygame.mixer.music.set_volume(volume / 100)
+                        if theme == "DARK":
+                            item1 = smallfont.render("resume (Esc)", True, white)
+                            item2 = smallfont.render("new game (N)", True, white)
+                            item3 = smallfont.render("exit (AltF4)", True, white)
+                        else:
+                            item1 = smallfont.render("resume (Esc)", True, black)
+                            item2 = smallfont.render("new game (N)", True, black)
+                            item3 = smallfont.render("exit (AltF4)", True, black)
+                        item1pos = item1.get_rect(centerx=background.get_width() / 2)
+                        item1pos.top = 300
+                        item2pos = item2.get_rect(centerx=background.get_width() / 2)
+                        item2pos.top = 350
+                        item3pos = item3.get_rect(centerx=background.get_width() / 2)
+                        item3pos.top = 400
+                        selected = 0
 
-        if item1pos.left <= get_mouse_x() <= item1pos.right and \
-                item1pos.top <= get_mouse_y() <= item1pos.bottom:
-            clear_items()
-            item1 = mediumfont.render("< back (Esc)", True, grey)
-            center_items()
-            selected = 1
-            if event.type == MOUSEBUTTONUP and event.button == 1:
-                settingsopened = False
-                clear_items()
-                center_items()
-        elif item3pos.left <= get_mouse_x() <= item3pos.right and \
-                item3pos.top <= get_mouse_y() <= item3pos.bottom:
-            clear_items()
-            item3 = mediumfont.render("players (F5)", True, grey)
-            center_items()
-            selected = 3
-            if event.type == MOUSEBUTTONUP and event.button == 1:
-                displayers()
-        elif item4pos.left <= get_mouse_x() <= item4pos.right and \
-                item4pos.top <= get_mouse_y() <= item4pos.bottom:
-            clear_items()
-            item4 = mediumfont.render("more (Shift)", True, grey)
-            center_items()
-            selected = 4
-            if event.type == MOUSEBUTTONUP and event.button == 1:
-                ext_settings()
-        elif item5pos.left <= get_mouse_x() <= item5pos.right and \
-                item5pos.top <= get_mouse_y() <= item5pos.bottom:
-            clear_items()
-            item5 = smallfont.render("-", True, grey)
-            center_items()
-            selected = 5
-            if event.type == MOUSEBUTTONUP and event.button == 1:
-                if volume > 0:
-                    volume -= 5
-                    event.button = 0
-                    pygame.mixer.music.set_volume(volume / 100)
-        elif item6pos.left <= get_mouse_x() <= item6pos.right and \
-                item6pos.top <= get_mouse_y() <= item6pos.bottom:
-            clear_items()
-            item6 = smallfont.render("+", True, grey)
-            center_items()
-            selected = 6
-            if event.type == MOUSEBUTTONUP and event.button == 1:
-                if volume < 100:
-                    volume += 5
-                    event.button = 0
-                    pygame.mixer.music.set_volume(volume / 100)
-        else:
-            clear_items()
-            center_items()
+                if selected == 1:  # Продолжение игры
+                    if event.type == MOUSEBUTTONUP:
+                        if item1pos.left <= get_mouse_x() <= item1pos.right and \
+                                item1pos.top <= get_mouse_y() <= item1pos.bottom:
+                            pygame.mouse.set_visible(False)
+                            pygame.event.set_grab(True)
+                            pygame.mixer.music.set_volume(volume)
+                            if pygame.mixer.music.get_endevent():
+                                pygame.mixer.music.queue(load_theme())
+                            paused = False
+                            pauseclose = True
 
-        pygame.display.flip()
-        clock.tick(fps)
+                elif selected == 2:  # Новая игра
+                    if event.type == MOUSEBUTTONUP:
+                        if item2pos.left <= get_mouse_x() <= item2pos.right and \
+                                item2pos.top <= get_mouse_y() <= item2pos.bottom:
+                            if theme == "DARK":
+                                screen.fill(black)
+                            else:
+                                screen.fill(white)
+                            pygame.mouse.set_visible(False)
+                            pygame.event.set_grab(True)
+                            pygame.mixer.music.set_volume(volume)
+                            pygame.mixer.music.stop()
+                            pygame.mixer.music.queue(load_theme())
+                            paused = False
+                            pauseclose = True
+                            result = None
+                            game_over = True
+                            nextlevel = False
+                            nrow = 4
+                            score = 0
+                            level = 1
+                            deadblocks.clear()
+                            allsprites = pygame.sprite.Group()
+                            allsprites.add(ball)
+                            allsprites.add(player)
+                            blocks = pygame.sprite.Group()
 
+                elif selected == 3:  # Выход из игры
+                    if event.type == MOUSEBUTTONUP:
+                        if item3pos.left <= get_mouse_x() <= item3pos.right and \
+                                item3pos.top <= get_mouse_y() <= item3pos.bottom:
+                            close_arkanoid()
 
-def displayers():  # Список игроков
-    pass
-
-
-def ext_settings():  # Дополнительные настройки
-    pass
+            pygame.display.flip()
+            clock.tick(fps)
 
 
 def intro():  # Приветственный экран в начале игры
@@ -792,6 +633,7 @@ result = None
 shift = False
 
 currentspeed = ball.speed
+volume = pygame.mixer.music.get_volume()
 
 while developer == "@super_nuke":
     game_over = False
@@ -863,13 +705,18 @@ while developer == "@super_nuke":
             clock.tick(fps)
             if theme == "DARK":
                 screen.fill(black)
-                player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "dark_theme",
                                                               f"playerframe{playerframe}.png"))
             else:
                 screen.fill(white)
-                player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "light_theme",
                                                               f"playerframe{playerframe}.png"))
             allsprites.remove(ball)
+            allsprites.draw(screen)
             allsprites.add(ball)
 
             if not nextlevel:
@@ -879,8 +726,6 @@ while developer == "@super_nuke":
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
             text1pos.top = 450
             screen.blit(text1, text1pos)
-
-            allsprites.draw(screen)
 
             if result == "Victory":
                 screen.blit(text2, text2pos)
@@ -974,13 +819,18 @@ while developer == "@super_nuke":
             clock.tick(fps)
             if theme == "DARK":
                 screen.fill(black)
-                player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "dark_theme",
                                                               f"playerframe{playerframe}.png"))
             else:
                 screen.fill(white)
-                player.image = pygame.image.load(os.path.join("images", "player", "light_theme",
+                player.image = pygame.image.load(os.path.join("images",
+                                                              "player",
+                                                              "light_theme",
                                                               f"playerframe{playerframe}.png"))
             allsprites.remove(ball)
+            allsprites.draw(screen)
             allsprites.add(ball)
 
             if not nextlevel:
@@ -990,8 +840,6 @@ while developer == "@super_nuke":
             text1pos = text1.get_rect(centerx=background.get_width() / 2)
             text1pos.top = 450
             screen.blit(text1, text1pos)
-
-            allsprites.draw(screen)
 
             if result == "Victory":
                 screen.blit(text2, text2pos)
@@ -1150,7 +998,7 @@ while developer == "@super_nuke":
                 if event.key == K_ESCAPE:
                     pygame.mouse.set_visible(True)
                     pygame.event.set_grab(False)
-                    pygame.mixer.music.pause()
+                    pygame.mixer.music.set_volume(0)
                     paused = True
                 if event.key == K_x:
                     speedup = not speedup
@@ -1173,8 +1021,7 @@ while developer == "@super_nuke":
                     pygame.mouse.set_pos(player.rect.x, player.rect.y)
                 movemode = 0
 
-        if paused:
-            pause()
+        pausecheck()
 
         if not ball.update():
             player.update()
@@ -1277,14 +1124,22 @@ while developer == "@super_nuke":
         if playerframe == 14:
             playerframe = 1
         if theme == "DARK":
-            ball.image = pygame.image.load(os.path.join("images", "ball", "dark_theme",
+            ball.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "dark_theme",
                                                         f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images", "player", "dark_theme",
+            player.image = pygame.image.load(os.path.join("images",
+                                                          "player",
+                                                          "dark_theme",
                                                           f"playerframe{playerframe}.png"))
         else:
-            ball.image = pygame.image.load(os.path.join("images", "ball", "light_theme",
+            ball.image = pygame.image.load(os.path.join("images",
+                                                        "ball",
+                                                        "light_theme",
                                                         f"ballframe{ballframe}.png"))
-            player.image = pygame.image.load(os.path.join("images", "player",  "light_theme",
+            player.image = pygame.image.load(os.path.join("images",
+                                                          "player",
+                                                          "light_theme",
                                                           f"playerframe{playerframe}.png"))
         framecount += 1
 
